@@ -37,15 +37,22 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: If you remove getClaims() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
-  const { data } = await supabase.auth.getClaims();
+  let user;
+  const PUBLIC_ROUTES = ["/hero", "/about"];
+  try {
+    const { data } = await supabase.auth.getClaims();
+    user = data?.claims;
+  } catch (error) {
+    //redirect login
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
+  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
 
-  const user = data?.claims;
-
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
+  if (!user && !isPublicRoute) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/login";
@@ -64,6 +71,9 @@ export async function updateSession(request: NextRequest) {
   //    return myNewResponse
   // If this is not done, you may be causing the browser and server to go out
   // of sync and terminate the user's session prematurely!
+  supabaseResponse.headers.set("X-Content-Type-Options", "nosniff");
+  supabaseResponse.headers.set("X-Frame-Options", "DENY");
+  supabaseResponse.headers.set("X-XSS-Protection", "1; mode=block");
 
   return supabaseResponse;
 }
