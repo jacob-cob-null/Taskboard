@@ -33,3 +33,9 @@ export function useRedirectLogin() {
   const router = useRouter();
   return () => router.push("/dashboard");
 }
+// Retrieve user attributes
+export async function getUser() {
+  const supabase = createClient();
+  const user = await supabase.auth.getUser();
+  return user.data;
+}
