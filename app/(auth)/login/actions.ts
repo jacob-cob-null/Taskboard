@@ -1,7 +1,7 @@
 "use client";
 import { CredentialResponse } from "@react-oauth/google";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+
 // Login with google
 export async function handleSignInWithGoogle(response: CredentialResponse) {
   const supabase = createClient();
@@ -27,15 +27,4 @@ export async function handleSignInWithGoogle(response: CredentialResponse) {
   }
 
   return data;
-}
-// Redirect upon success
-export function useRedirectLogin() {
-  const router = useRouter();
-  return () => router.push("/dashboard");
-}
-// Retrieve user attributes
-export async function getUser() {
-  const supabase = createClient();
-  const user = await supabase.auth.getUser();
-  return user.data;
 }
