@@ -1,0 +1,50 @@
+@import "tailwindcss";
+@layer base {
+  :root {
+    /* Minimal White Palette */
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #f9fafb;
+    --color-bg-tertiary: #f3f4f6;
+
+    /* Text Colors */
+    --color-text-primary: #111827;
+    --color-text-secondary: #6b7280;
+    --color-text-tertiary: #9ca3af;
+
+    /* Borders */
+    --color-border-light: #e5e7eb;
+    --color-border-default: #d1d5db;
+    --color-border-dark: #9ca3af;
+
+    /* Accents */
+    --color-accent-primary: #2563eb;
+    --color-accent-secondary: #10b981;
+    --color-accent-danger: #ef4444;
+    --color-accent-warning: #f59e0b;
+
+    /* Hover States */
+    --color-hover: #f3f4f6;
+    --color-hover-accent: #1d4ed8;
+  }
+}
+
+@layer components {
+  .bg-primary {
+    @apply bg-[var(--color-bg-primary)];
+  }
+  .bg-secondary {
+    @apply bg-[var(--color-bg-secondary)];
+  }
+  .bg-tertiary {
+    @apply bg-[var(--color-bg-tertiary)];
+  }
+  .text-primary {
+    @apply text-[var(--color-text-primary)];
+  }
+  .text-secondary {
+    @apply text-[var(--color-text-secondary)];
+  }
+  .border-primary {
+    @apply border-[var(--color-border-light)];
+  }
+}
