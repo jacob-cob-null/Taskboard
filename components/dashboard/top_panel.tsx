@@ -2,7 +2,7 @@ import React from "react";
 
 function Top_panel() {
   return (
-    <div className="w-full h-full bg-tertiary flex justify-center items-center">
+    <div className="w-full h-full bg-secondary border border-primary rounded-2xl drop-shadow-sm flex justify-center items-center">
       Side Panel
     </div>
   );
