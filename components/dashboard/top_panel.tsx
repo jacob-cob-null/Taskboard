@@ -1,4 +1,4 @@
-import React from "react";
+import newTeam from "@/components/teams/newTeam";
 
 function Top_panel() {
   return (
