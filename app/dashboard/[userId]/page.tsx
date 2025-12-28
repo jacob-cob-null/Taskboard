@@ -11,6 +11,7 @@ export default async function Page({
     <div>
       <h1>Dashboard</h1>
       Team: {userId}
+      {/* User will choose teams */}
     </div>
   );
 }
