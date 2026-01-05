@@ -22,13 +22,26 @@ export function extractSessionData(session: Session) {
   };
 }
 
-// Update Refresh token
-export async function updateRefreshToken(userId: string, token: string) {
+// Update Refresh token// actions/auth.ts
+export async function updateUserProfile(
+  userId: string,
+  data: {
+    email: string;
+    fullName: string;
+    avatarUrl: string | null;
+    googleRefreshToken: string | null;
+  }
+) {
   try {
     const supabase = await createClient();
     const { error } = await supabase
       .from("profiles")
-      .update({ google_refresh_token: token })
+      .update({
+        email: data.email,
+        full_name: data.fullName,
+        avatar_url: data.avatarUrl,
+        google_refresh_token: data.googleRefreshToken,
+      })
       .eq("id", userId);
 
     if (error) return { success: false };
