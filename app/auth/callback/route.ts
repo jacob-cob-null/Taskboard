@@ -13,14 +13,19 @@ export async function GET(request: Request) {
       // Extract the Google provider refresh token
       const googleRefreshToken = data.session.provider_refresh_token;
       const userId = data.session.user.id;
+      const userEmail = data.session.user.email || "";
 
-      // Save the Google refresh token to profiles table for offline calendar access
-      if (googleRefreshToken) {
-        await supabase
-          .from("profiles")
-          .update({ google_refresh_token: googleRefreshToken })
-          .eq("id", userId);
-      }
+      // Upsert profile with user data and Google refresh token
+      await supabase.from("profiles").upsert(
+        {
+          id: userId,
+          email: userEmail,
+          full_name: data.session.user.user_metadata?.full_name || "",
+          avatar_url: data.session.user.user_metadata?.avatar_url || null,
+          google_refresh_token: googleRefreshToken || null,
+        },
+        { onConflict: "id" }
+      );
 
       // Redirect to dashboard
       const forwardedHost = request.headers.get("x-forwarded-host");

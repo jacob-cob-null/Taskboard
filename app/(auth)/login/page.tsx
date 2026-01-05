@@ -1,37 +1,33 @@
 "use client";
 import { handleSignInWithGoogle } from "./actions";
-import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
-import { useState } from "react";
 import Error_msg from "@/components/login/error_msg";
-import { getUser } from "@/actions/auth";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Page() {
   const [showError, setShowError] = useState(false);
-  const router = useRouter();
-  // Handler
-  const handleSuccess = async (response: CredentialResponse) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleClick = async () => {
     try {
-      const result = await handleSignInWithGoogle(response);
-
-      // Redirect according to result
-      if (result.user) {
-        const { data, error } = await getUser();
-
-        if (error || !data?.user) {
-          return;
-        }
-        router.push(`/dashboard/${data.user.id}`);
-      }
+      setIsLoading(true);
+      await handleSignInWithGoogle();
     } catch (error) {
+      console.error("Auth error:", error);
       setShowError(true);
+      setIsLoading(false);
     }
   };
 
   return (
     <>
       {showError && <Error_msg onClose={() => setShowError(false)} />}
-      <GoogleLogin onSuccess={handleSuccess} />
+      <button
+        onClick={handleClick}
+        disabled={isLoading}
+        className="px-4 py-2 bg-blue-600 text-white rounded"
+      >
+        {isLoading ? "Signing in..." : "Sign in with Google"}
+      </button>
     </>
   );
 }

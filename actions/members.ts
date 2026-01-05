@@ -12,9 +12,9 @@ export async function addMember(email: string, name: string) {
 
     console.log("Success: Member created with ID", member.id);
     return { success: true, member };
-  } catch (error: any) {
-    // If the email already exists, Prisma will throw a specific error
-    if (error.code === "P2002") {
+  } catch (error: unknown) {
+    // Throw error on duplicate emails
+    if (error instanceof Error && "code" in error && error.code === "P2002") {
       return { success: false, error: "This email is already registered." };
     }
     return { success: false, error: "Database connection failed." };
