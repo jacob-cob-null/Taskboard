@@ -62,16 +62,16 @@ Deno.serve(async (req: Request) => {
     if (googleRefreshToken !== undefined)
       profilePayload.google_refresh_token = googleRefreshToken;
 
-    // Build PATCH (upsert) request to profiles table via Supabase REST (using RPC upsert via POST with Prefer: resolution=merge-duplicates)
-    // We'll use POST /rest/v1/profiles with upsert using Prefer: resolution=merge-duplicates and on_conflict=id
+    // Build PATCH (upsert) request to profiles table via Supabase REST
+    // Use POST with Prefer: resolution=merge-duplicates for upsert on conflict
 
-    const res = await fetch(`${supabaseUrl}/rest/v1/profiles`, {
+    const res = await fetch(`${supabaseUrl}/rest/v1/profiles?on_conflict=id`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         apikey: serviceKey,
         Authorization: `Bearer ${serviceKey}`,
-        Prefer: "resolution=merge-duplicates,return=representation",
+        Prefer: "resolution=merge-duplicates",
       },
       body: JSON.stringify(profilePayload),
     });
