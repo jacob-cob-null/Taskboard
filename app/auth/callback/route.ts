@@ -40,11 +40,11 @@ export async function GET(request: Request) {
         Authorization: `Bearer ${serviceRoleKey}`,
       },
       body: JSON.stringify({
-        userId,
-        googleRefreshToken,
+        user_id: userId,
+        google_refresh_token: googleRefreshToken,
         email,
-        fullName,
-        avatarUrl,
+        full_name: fullName,
+        avatar_url: avatarUrl,
       }),
     });
 
