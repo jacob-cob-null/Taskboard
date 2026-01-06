@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import { extractSessionData, updateUserProfile } from "@/actions/auth";
+import { extractSessionData } from "@/utils/auth-helpers";
+
+const EDGE_FUNCTION_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL + "/functions/v1/store-google-refresh";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -18,16 +21,40 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/auth/auth-code-error`);
   }
 
-  // Extract all session data and update
+  // Extract all session data
   const { userId, email, fullName, avatarUrl, googleRefreshToken } =
     extractSessionData(data.session);
 
-  const credentials = { email, fullName, avatarUrl, googleRefreshToken };
-  const { success } = await updateUserProfile(userId, credentials);
+  // Call Edge Function to securely store token
+  try {
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!serviceRoleKey) {
+      console.error("SUPABASE_SERVICE_ROLE_KEY not set");
+      return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+    }
 
-  // Failed update
-  if (!success) {
-    console.error("Profile update failed", { userId });
+    const response = await fetch(EDGE_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${serviceRoleKey}`,
+      },
+      body: JSON.stringify({
+        userId,
+        googleRefreshToken,
+        email,
+        fullName,
+        avatarUrl,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Edge Function call failed:", errorData);
+      return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+    }
+  } catch (error) {
+    console.error("Failed to call Edge Function:", error);
     return NextResponse.redirect(`${origin}/auth/auth-code-error`);
   }
 
