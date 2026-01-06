@@ -1,30 +1,27 @@
-"use client";
-import { CredentialResponse } from "@react-oauth/google";
-import { createClient } from "@/utils/supabase/client";
+"use server";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
-// Login with google
-export async function handleSignInWithGoogle(response: CredentialResponse) {
-  const supabase = createClient();
+export async function handleSignInWithGoogle() {
+  const supabase = await createClient();
 
-  if (!response.credential) {
-    throw new Error("No credential provided");
-  }
-
-  // Get nonce from JWT for Google auth
-  const parts = response.credential.split(".");
-  const payload = JSON.parse(atob(parts[1]));
-  const googleNonce = payload.nonce;
-
-  const { data, error } = await supabase.auth.signInWithIdToken({
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    token: response.credential,
-    nonce: googleNonce,
+    options: {
+      scopes: "https://www.googleapis.com/auth/calendar.app.created",
+      queryParams: {
+        access_type: "offline",
+        prompt: "consent",
+      },
+      redirectTo: `${
+        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      }/auth/callback`,
+    },
   });
 
-  if (error) {
-    console.error(`Something went wrong ${error.message}`);
-    throw error;
-  }
+  if (error) throw error;
 
-  return data;
+  if (data?.url) {
+    redirect(data.url);
+  }
 }
