@@ -1,5 +1,7 @@
+"use client";
 import Top_panel from "@/components/dashboard/top_panel";
 import NewMember from "@/components/teams/button";
+import { signOut } from "@/app/(auth)/login/actions";
 export default function DashboardLayout({
   children,
 }: Readonly<{
@@ -10,8 +12,14 @@ export default function DashboardLayout({
       <div className="p-3">
         <NewMember />
         <Top_panel />
+        <button
+          onClick={() => signOut()}
+          className="h-fit w-fit p-1 px-2 m-5 bg-red-100 justify-center items-center"
+        >
+          Sign Out
+        </button>
+        {children}
       </div>
-      {children}
     </div>
   );
 }
