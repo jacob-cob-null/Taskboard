@@ -37,8 +37,19 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: If you remove getClaims() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
+
+  // Routes that don't require authentication
+  const PUBLIC_ROUTES = ["/hero", "/about", "/login", "/auth/callback", "/404"];
+  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  // Skip auth check for public routes to prevent redirect loops
+  if (isPublicRoute) {
+    return supabaseResponse;
+  }
+
   let user;
-  const PUBLIC_ROUTES = ["/hero", "/about"];
   try {
     const { data } = await supabase.auth.getClaims();
     user = data?.claims;
@@ -48,11 +59,8 @@ export async function updateSession(request: NextRequest) {
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
-  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
-    request.nextUrl.pathname.startsWith(route)
-  );
 
-  if (!user && !isPublicRoute) {
+  if (!user) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/login";
