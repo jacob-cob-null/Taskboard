@@ -1,6 +1,6 @@
 "use client";
-import Top_panel from "@/components/dashboard/top_panel";
-import NewMember from "@/components/teams/button";
+import Top_panel from "./components/top_panel";
+import NewMember from "./components/new_member";
 import { signOut } from "@/app/(auth)/login/actions";
 export default function DashboardLayout({
   children,

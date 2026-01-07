@@ -1,6 +1,6 @@
 "use client";
 import { handleSignInWithGoogle } from "./actions";
-import Error_msg from "@/components/login/error_msg";
+import Error_msg from "./components/error_msg";
 import { useState } from "react";
 
 export default function Page() {
