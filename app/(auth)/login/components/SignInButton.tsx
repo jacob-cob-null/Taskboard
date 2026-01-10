@@ -1,6 +1,5 @@
-import React from "react";
 import { useState } from "react";
-import { handleSignInWithGoogle } from "@/app/(auth)/login/actions";
+import { handleSignInWithGoogle } from "../actions";
 import { FcGoogle } from "react-icons/fc";
 
 function SignInBtn() {
@@ -19,7 +18,7 @@ function SignInBtn() {
       className="px-4 py-2 bg-white outline-1 outline-slate-300 shadow-2xs text-black rounded flex items-center gap-4 justify-between"
     >
       <FcGoogle className="text-2xl" />
-      <h1>Sign in with Google</h1>
+      <span>Sign in with Google</span>
     </button>
   );
 }
