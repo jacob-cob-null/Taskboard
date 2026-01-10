@@ -23,7 +23,7 @@ const config: Config = {
         dark: "var(--color-border-dark)",
       },
       fontFamily: {
-        display: ["var(--font-archivo)", "sans-serif"],
+        display: ["var(--font-display)", "serif"],
         sans: ["var(--font-inter)", "sans-serif"],
       },
     },
