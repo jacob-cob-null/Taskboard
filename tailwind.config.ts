@@ -22,6 +22,10 @@ const config: Config = {
         default: "var(--color-border-default)",
         dark: "var(--color-border-dark)",
       },
+      fontFamily: {
+        display: ["var(--font-archivo)", "sans-serif"],
+        sans: ["var(--font-inter)", "sans-serif"],
+      },
     },
   },
   plugins: [],
