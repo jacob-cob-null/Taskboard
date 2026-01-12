@@ -15,7 +15,7 @@ function SignInBtn() {
     <button
       onClick={handleClick}
       disabled={isLoading}
-      className="px-8 py-4 w-full font-sans bg-white outline-1 outline-slate-300 shadow-xs text-black rounded-xl flex items-center gap-4 justify-center"
+      className="px-8 py-4 w-full font-sans hover:bg-gray-50 active:bg-gray-100 bg-white outline-1 outline-slate-300 shadow-xs text-black rounded-xl flex items-center gap-4 justify-center"
     >
       <FcGoogle className="text-2xl" />
       <span className={`${inter.className}`}>Sign in with Google</span>
