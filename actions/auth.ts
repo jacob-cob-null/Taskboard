@@ -22,3 +22,13 @@ export async function verifyUserAccess(slug: string) {
   }
   return data.user;
 }
+// Sign out
+export async function signOut() {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signOut();
+  if (!error) {
+    redirect("/login");
+  } else {
+    console.error("Error signing out" + error?.cause);
+  }
+}
