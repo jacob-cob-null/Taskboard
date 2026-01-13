@@ -18,8 +18,8 @@ export default async function Page({
   const { full_name, email, avatar_url, name } = user.user_metadata;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 p-4 sm:p-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-4 sm:p-8">
+      <div className="max-w-4xl w-full">
         {/* Welcome Section */}
         <div className="mb-8">
           <WelcomeMsg name={name} avatarUrl={avatar_url} email={email} />

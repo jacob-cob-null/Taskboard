@@ -42,7 +42,7 @@ export type Team = {
   color: string;
 };
 
-// Sample data - replace with actual data
+// Sample data
 const sampleData: Team[] = [
   { id: "1", name: "Design", memberCount: 8, icon: "🎨", color: "bg-pink-100" },
   {
@@ -177,7 +177,7 @@ export default function TeamTable({ data = sampleData }: TeamTableProps) {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col">
       {/* Search Input */}
       <div className="flex items-center pb-4">
         <div className="relative w-full max-w-sm">
@@ -206,7 +206,7 @@ export default function TeamTable({ data = sampleData }: TeamTableProps) {
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-gray-200 overflow-hidden">
+      <div className="rounded-xl border border-gray-200">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
