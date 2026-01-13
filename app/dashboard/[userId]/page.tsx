@@ -2,7 +2,7 @@ import { verifyUserAccess } from "@/actions/auth";
 import WelcomeMsg from "./components/WelcomeMsg";
 import { inter } from "@/app/fonts";
 import { Button } from "@/components/ui/button";
-import TeamTable from "./components/TeamTable";
+import { TeamTable } from "./components/team-table";
 import { Plus } from "lucide-react";
 
 export default async function Page({
