@@ -1,12 +1,13 @@
 "use client";
 import { signOut } from "@/actions/auth";
+import { LuDoorOpen } from "react-icons/lu";
 function SignOutBtn() {
   return (
     <button
       onClick={() => signOut()}
-      className="h-fit w-fit p-1 px-2 m-5 bg-red-100 justify-center items-center"
+      className="h-fit w-fit flex justify-center items-center pointer-fine:"
     >
-      Sign Out
+      <LuDoorOpen />
     </button>
   );
 }
