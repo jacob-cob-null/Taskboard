@@ -1,10 +1,8 @@
 import { verifyUserAccess } from "@/actions/auth";
 import WelcomeMsg from "./components/WelcomeMsg";
 import { inter } from "@/app/fonts";
-import { Button } from "@/components/ui/button";
 import { TeamTable } from "./components/team-table";
-import { Plus } from "lucide-react";
-
+import NewTeamBtn from "./components/NewTeamBtn";
 export default async function Page({
   params,
 }: {
@@ -37,12 +35,8 @@ export default async function Page({
                 Choose a workspace to continue your progress.
               </p>
             </div>
-            <Button className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add Team
-            </Button>
+            <NewTeamBtn />
           </div>
-
           {/* Team Table */}
           <TeamTable />
         </div>

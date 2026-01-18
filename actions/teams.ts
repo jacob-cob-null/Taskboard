@@ -1,8 +1,16 @@
 "use server";
-// 1. Use the singleton instance
+//singleton instance
 import prisma from "@/utils/prisma/prisma";
+import { getUser } from "./auth";
+import { revalidatePath } from "next/cache";
+export async function createTeam(teamName: string) {
+  const user = await getUser();
+  const leaderId = user.data.user?.id;
 
-export async function createTeam(leaderId: string, teamName: string) {
+  if (!user || !leaderId) {
+    throw new Error("Unauthorized Action");
+  }
+
   try {
     const newTeam = await prisma.teams.create({
       data: {
@@ -11,7 +19,7 @@ export async function createTeam(leaderId: string, teamName: string) {
       },
     });
 
-    // Return the data so the UI can use it
+    revalidatePath("/dashboard/[userId]");
     return { success: true, team: newTeam };
   } catch (error) {
     console.error("Database Error:", error);
