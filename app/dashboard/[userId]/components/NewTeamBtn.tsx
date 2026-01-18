@@ -9,11 +9,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui/AlertDialog";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { Plus } from "lucide-react";
 import { createTeam } from "@/actions/teams";
+import toast from "react-hot-toast";
 
 function NewTeamBtn() {
   const [teamName, setTeamName] = useState("");
@@ -25,11 +26,12 @@ function NewTeamBtn() {
 
     try {
       await createTeam(teamName);
-      // fallback: native alert
-      alert(`Team "${teamName}" created successfully!`);
+      toast.success(`Team "${teamName}" created successfully!`);
       setTeamName("");
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to create team");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create team",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -37,7 +39,6 @@ function NewTeamBtn() {
 
   return (
     <>
-      {/* alerts removed — using native alert as fallback */}
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button className="flex items-center justify-end gap-2">

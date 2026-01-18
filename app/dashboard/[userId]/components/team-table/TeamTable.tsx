@@ -18,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/Table";
 
 import { Team, TeamTableProps } from "./types";
 import { sampleData } from "./data";
@@ -35,7 +35,7 @@ export default function TeamTable({
 }: TeamTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
 
   const handleViewTeam = React.useCallback(
@@ -43,7 +43,7 @@ export default function TeamTable({
       console.log("View team:", team.name);
       onViewTeam?.(team);
     },
-    [onViewTeam]
+    [onViewTeam],
   );
 
   const handleEditTeam = React.useCallback(
@@ -51,7 +51,7 @@ export default function TeamTable({
       console.log("Edit team:", team.name);
       onEditTeam?.(team);
     },
-    [onEditTeam]
+    [onEditTeam],
   );
 
   const handleDeleteTeam = React.useCallback(
@@ -59,7 +59,7 @@ export default function TeamTable({
       console.log("Delete team:", team.name);
       onDeleteTeam?.(team);
     },
-    [onDeleteTeam]
+    [onDeleteTeam],
   );
 
   const handleCopyTeamId = React.useCallback(
@@ -68,7 +68,7 @@ export default function TeamTable({
       console.log("Copied team ID:", team.id);
       onCopyTeamId?.(team);
     },
-    [onCopyTeamId]
+    [onCopyTeamId],
   );
 
   const columns = React.useMemo(
@@ -79,7 +79,7 @@ export default function TeamTable({
         onDelete: handleDeleteTeam,
         onCopyId: handleCopyTeamId,
       }),
-    [handleViewTeam, handleEditTeam, handleDeleteTeam, handleCopyTeamId]
+    [handleViewTeam, handleEditTeam, handleDeleteTeam, handleCopyTeamId],
   );
 
   const table = useReactTable({
@@ -121,7 +121,7 @@ export default function TeamTable({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -136,7 +136,7 @@ export default function TeamTable({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
