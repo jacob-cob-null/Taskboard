@@ -19,17 +19,17 @@ const buttonVariants = cva(
           "text-main-foreground bg-main border-2 border-border hover:translate-x-reverseBoxShadowX hover:translate-y-reverseBoxShadowY hover:shadow-shadow",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 px-3",
-        lg: "h-11 px-8",
-        icon: "size-10",
+        default: "h-8 px-3 py-1.5 sm:h-10 sm:px-4 sm:py-2",
+        sm: "h-7 px-2 sm:h-9 sm:px-3",
+        lg: "h-9 px-6 sm:h-11 sm:px-8",
+        icon: "size-8 sm:size-10",
       },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 function Button({

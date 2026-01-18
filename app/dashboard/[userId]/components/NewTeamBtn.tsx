@@ -46,7 +46,7 @@ function NewTeamBtn() {
             New Team
           </Button>
         </AlertDialogTrigger>
-        <AlertDialogContent className="p-4">
+        <AlertDialogContent className="p-4 left-4 right-4 translate-x-0 sm:left-[50%] sm:right-auto sm:translate-x-[-50%] max-w-md sm:m-0 sm:w-full">
           <AlertDialogHeader className="p-1">
             <AlertDialogTitle>🎯 Create New Team</AlertDialogTitle>
           </AlertDialogHeader>
@@ -57,10 +57,15 @@ function NewTeamBtn() {
             onChange={(e) => setTeamName(e.target.value)}
             className=" border-gray-200 focus:border-blue-500 rounded-lg"
           />
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex flex-row">
+            <AlertDialogCancel
+              className="flex-1 sm:flex-none
+            "
+            >
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
-              className="flex justify-between gap-2 items-center"
+              className="flex justify-center gap-2 items-center"
               disabled={isLoading || !teamName.trim()}
               onClick={handleCreate}
             >
