@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signOut } from "@/actions/auth";
+import { checkCalendarPermissions } from "@/actions/calendar";
 
 export default function CalendarPermissionsBanner() {
   const [show, setShow] = useState(false);
@@ -10,8 +11,7 @@ export default function CalendarPermissionsBanner() {
   useEffect(() => {
     async function checkPermissions() {
       try {
-        const response = await fetch("/api/check-calendar-permissions");
-        const data = await response.json();
+        const data = await checkCalendarPermissions();
         setShow(data.needsReauth);
       } catch (error) {
         console.error("Failed to check permissions:", error);

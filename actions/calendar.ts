@@ -5,9 +5,7 @@ import { getUser } from "./auth";
 import prisma from "@/utils/prisma/prisma";
 import { getOAuth2Client } from "@/lib/google-calendar";
 
-/**
- * Nullifies the google_refresh_token for a user to break authentication loops.
- */
+// Nullify to break auth loops
 async function nullifyToken(userId: string) {
   console.warn(`Nullifying invalid token for user ${userId}`);
   await prisma.profiles.update({
@@ -16,10 +14,7 @@ async function nullifyToken(userId: string) {
   });
 }
 
-/**
- * Gets an authenticated Google Calendar client using the user's stored refresh token.
- * If the token is invalid (400), it nullifies it in the DB to trigger a re-auth UI.
- */
+// Gets calendar client, if invalid token (400) nullify and re-auth
 async function getCalendarClient() {
   const user = await getUser();
   const userId = user.data.user?.id;
@@ -44,10 +39,7 @@ async function getCalendarClient() {
   };
 }
 
-/**
- * Checks if the user has valid Calendar permissions.
- * If an invalid_request (400) occurs, it nullifies the token.
- */
+// Checks permission, if error, nullify and re-auth
 export async function checkCalendarPermissions() {
   try {
     const { client } = await getCalendarClient();
@@ -56,7 +48,7 @@ export async function checkCalendarPermissions() {
   } catch (error: any) {
     console.error("Permission check failed:", error?.message);
 
-    // If 400 (invalid_request) or 401/403 (unauthorized/forbidden), we need re-auth
+    // If any auth error, we need re-auth
     const isAuthError =
       [400, 401, 403].includes(error?.code) ||
       error?.response?.data?.error === "invalid_request";
@@ -72,9 +64,7 @@ export async function checkCalendarPermissions() {
   }
 }
 
-/**
- * Creates a new Google Calendar for a team.
- */
+// Creates a new Google Calendar for a team.
 export async function createTeamCalendar(teamName: string) {
   try {
     const { client } = await getCalendarClient();
@@ -97,9 +87,8 @@ export async function createTeamCalendar(teamName: string) {
   }
 }
 
-/**
- * Creates an event in a team's calendar.
- */
+// Creates an event in a team's calendar.
+
 export async function createCalendarEvent(
   calendarId: string,
   eventDetails: {
