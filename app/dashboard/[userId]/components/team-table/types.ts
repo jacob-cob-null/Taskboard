@@ -8,8 +8,6 @@ export type Team = {
 
 export interface TeamTableProps {
   data?: Team[];
-  onViewTeam?: (team: Team) => void;
   onEditTeam?: (team: Team) => void;
   onDeleteTeam?: (team: Team) => void;
-  onCopyTeamId?: (team: Team) => void;
 }

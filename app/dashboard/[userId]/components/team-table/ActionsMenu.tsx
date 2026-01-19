@@ -12,19 +12,11 @@ import { Team } from "./types";
 
 interface ActionsMenuProps {
   team: Team;
-  onView: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
-  onCopyId: () => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
-export function ActionsMenu({
-  team,
-  onView,
-  onEdit,
-  onDelete,
-  onCopyId,
-}: ActionsMenuProps) {
+export function ActionsMenu({ team, onEdit, onDelete }: ActionsMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -34,12 +26,14 @@ export function ActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={onCopyId}>Copy team ID</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onEdit(team.id)}>
+          Edit team
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onView}>View team</DropdownMenuItem>
-        <DropdownMenuItem onClick={onEdit}>Edit team</DropdownMenuItem>
-        <DropdownMenuItem onClick={onDelete} className="text-red-600">
+        <DropdownMenuItem
+          onClick={() => onDelete(team.id)}
+          className="text-red-600"
+        >
           Delete team
         </DropdownMenuItem>
       </DropdownMenuContent>
