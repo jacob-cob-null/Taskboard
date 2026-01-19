@@ -3,6 +3,8 @@ import WelcomeMsg from "./components/WelcomeMsg";
 import { inter } from "@/app/fonts";
 import { TeamTable } from "./components/team-table";
 import NewTeamBtn from "./components/NewTeamBtn";
+import CalendarPermissionsBanner from "./components/CalendarPermissionsBanner";
+
 export default async function Page({
   params,
 }: {
@@ -22,6 +24,9 @@ export default async function Page({
         <div className="mb-8">
           <WelcomeMsg name={name} avatarUrl={avatar_url} email={email} />
         </div>
+
+        {/* Calendar Permissions Banner */}
+        <CalendarPermissionsBanner />
 
         {/* Team Selection Card */}
         <div className="bg-white rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6">
