@@ -6,6 +6,8 @@ import { revalidatePath } from "next/cache";
 import { Team } from "@/lib/validations";
 import { createTeamCalendar } from "./calendar";
 
+// TODO::: make get user function reusable
+
 export async function createTeam(teamName: string) {
   // Get user id
   const user = await getUser();
@@ -51,5 +53,57 @@ export async function createTeam(teamName: string) {
   } catch (error) {
     console.error("Database Error:", error);
     return { success: false, error: "Failed to create team" };
+  }
+}
+
+// Get list of teams
+export async function getTeams() {
+  const user = await getUser();
+  const leaderId = user.data.user?.id;
+
+  if (!user || !leaderId) {
+    throw new Error("Unauthorized Action");
+  }
+  const teams = await prisma.teams.findMany({
+    where: {
+      leader_id: leaderId,
+    },
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: { teamMembers: true },
+      },
+    },
+  });
+
+  // Transform to match Team type with memberCount
+  return teams.map((team) => ({
+    id: team.id,
+    name: team.name,
+    memberCount: team._count.teamMembers,
+  }));
+}
+
+// Delete teams
+export async function deleteTeam(teamId: string) {
+  const user = await getUser();
+  const leaderId = user.data.user?.id;
+
+  if (!user || !leaderId) {
+    throw new Error("Unauthorized Action");
+  }
+
+  try {
+    await prisma.teams.delete({
+      where: {
+        id: teamId,
+      },
+    });
+    revalidatePath("/dashboard/[userId]");
+    return { success: true };
+  } catch (error) {
+    console.error("Database Error:", error);
+    return { success: false, error: "Failed to delete team" };
   }
 }

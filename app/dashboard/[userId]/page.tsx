@@ -1,4 +1,5 @@
 import { verifyUserAccess } from "@/actions/auth";
+import { getTeams } from "@/actions/teams";
 import WelcomeMsg from "./components/WelcomeMsg";
 import { inter } from "@/app/fonts";
 import { TeamTable } from "./components/team-table";
@@ -13,6 +14,9 @@ export default async function Page({
   const { userId } = await params;
 
   const user = await verifyUserAccess(userId);
+
+  // Fetch teams data
+  const teams = await getTeams();
 
   // Google auth info is in user.user_metadata
   const { full_name, email, avatar_url, name } = user.user_metadata;
@@ -43,7 +47,7 @@ export default async function Page({
             <NewTeamBtn />
           </div>
           {/* Team Table */}
-          <TeamTable />
+          <TeamTable data={teams} />
         </div>
       </div>
     </div>

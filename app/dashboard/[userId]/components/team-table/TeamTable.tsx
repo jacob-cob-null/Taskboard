@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/Table";
+import { deleteTeam } from "@/actions/teams";
 
 import { Team, TeamTableProps } from "./types";
 import { sampleData } from "./data";
@@ -20,10 +21,6 @@ export default function TeamTable({
   data = sampleData,
   // Edit Handler
   onEditTeam = (team: Team) => {
-    console.log(team.id);
-  },
-  // Delete Handler
-  onDeleteTeam = (team: Team) => {
     console.log(team.id);
   },
 }: TeamTableProps) {
@@ -84,11 +81,6 @@ export default function TeamTable({
                 <TableRow key={team.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div
-                        className={`w-8 h-8 rounded-lg ${team.color} flex items-center justify-center text-base`}
-                      >
-                        {team.icon}
-                      </div>
                       <span className="font-medium text-gray-900">
                         {team.name}
                       </span>
@@ -101,7 +93,7 @@ export default function TeamTable({
                     <ActionsMenu
                       team={team}
                       onEdit={() => onEditTeam?.(team)}
-                      onDelete={() => onDeleteTeam?.(team)}
+                      onDelete={() => deleteTeam(team.id)}
                     />
                   </TableCell>
                 </TableRow>
