@@ -64,10 +64,14 @@ export async function checkCalendarPermissions() {
   }
 }
 // Get calendar id
-async function getTeamCaledarId(teamId: string): Promise<string | null> {
+async function getTeamCalendarId(
+  teamId: string,
+  leader_id: string,
+): Promise<string | null> {
   const team = await prisma.teams.findUnique({
     where: {
       id: teamId,
+      leader_id: leader_id,
     },
     select: {
       google_calendar_id: true,
@@ -100,17 +104,22 @@ export async function createTeamCalendar(teamName: string) {
 }
 // update calendar
 export async function updateTeamCalendar(teamId: string, teamName: string) {
+  const user = await getUser();
+  const userId = user.data.user?.id;
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
   // retrieve calendar id
-  const calendarId = await getTeamCaledarId(teamId);
+  const calendarId = await getTeamCalendarId(teamId, userId);
+
+  if (!calendarId) {
+    return {
+      success: false,
+      error: "Calendar not found",
+    };
+  }
   try {
     const { client } = await getCalendarClient();
-
-    if (!calendarId) {
-      return {
-        success: false,
-        error: "Calendar not found",
-      };
-    }
     const response = await client.calendars.update({
       calendarId: calendarId,
       requestBody: {
@@ -131,16 +140,22 @@ export async function updateTeamCalendar(teamId: string, teamName: string) {
 }
 // delete calendar
 export async function deleteTeamCalendar(teamId: string) {
+  const user = await getUser();
+  const userId = user.data.user?.id;
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
   // retrieve calendar id
-  const calendarId = await getTeamCaledarId(teamId);
+  const calendarId = await getTeamCalendarId(teamId, userId);
+
+  if (!calendarId) {
+    return {
+      success: false,
+      error: "Calendar not found",
+    };
+  }
   try {
     const { client } = await getCalendarClient();
-    if (!calendarId) {
-      return {
-        success: false,
-        error: "Calendar not found",
-      };
-    }
     const response = await client.calendars.delete({
       calendarId: calendarId,
     });

@@ -61,18 +61,6 @@ export default function TeamTable({
     }
   };
 
-  // Handle confirmed edit
-  const handleConfirmEdit = async () => {
-    if (teamToEdit) {
-      toast.loading(`Editing team ${teamToEdit.name} ...`);
-      await updateTeam(teamToEdit.id, teamToEdit.name);
-      setEditModalOpen(false);
-      setTeamToEdit(null);
-      toast.dismiss();
-      toast.success(`Team ${teamToEdit.name} edited successfully!`);
-    }
-  };
-
   // Filter data based on search
   const filteredData = React.useMemo(() => {
     return data.filter((team) =>
