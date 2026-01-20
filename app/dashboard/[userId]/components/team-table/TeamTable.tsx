@@ -2,153 +2,141 @@
 
 import * as React from "react";
 import {
-  ColumnFiltersState,
-  SortingState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/Table";
+import { deleteTeam, updateTeam } from "@/actions/teams";
 
 import { Team, TeamTableProps } from "./types";
 import { sampleData } from "./data";
 import { SearchInput } from "./SearchInput";
 import { Pagination } from "./Pagination";
-import { createColumns } from "./columns";
+import { ActionsMenu } from "./ActionsMenu";
+import ConfirmationModal from "./ConfirmationModal";
+import toast from "react-hot-toast";
+import EditTeamModal from "./EditTeamModal";
 
 export default function TeamTable({
   data = sampleData,
-  onViewTeam,
-  onEditTeam,
-  onDeleteTeam,
-  onCopyTeamId,
+  onEditTeam = (team: Team) => {
+    console.log(team.id);
+  },
 }: TeamTableProps) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
+  // Search and pagination
+  const [searchValue, setSearchValue] = React.useState("");
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const itemsPerPage = 5;
 
-  const handleViewTeam = React.useCallback(
-    (team: Team) => {
-      console.log("View team:", team.name);
-      onViewTeam?.(team);
-    },
-    [onViewTeam]
-  );
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [teamToDelete, setTeamToDelete] = React.useState<Team | null>(null);
 
-  const handleEditTeam = React.useCallback(
-    (team: Team) => {
-      console.log("Edit team:", team.name);
-      onEditTeam?.(team);
-    },
-    [onEditTeam]
-  );
+  const [editModalOpen, setEditModalOpen] = React.useState(false);
+  const [teamToEdit, setTeamToEdit] = React.useState<Team | null>(null);
 
-  const handleDeleteTeam = React.useCallback(
-    (team: Team) => {
-      console.log("Delete team:", team.name);
-      onDeleteTeam?.(team);
-    },
-    [onDeleteTeam]
-  );
-
-  const handleCopyTeamId = React.useCallback(
-    (team: Team) => {
-      navigator.clipboard.writeText(team.id);
-      console.log("Copied team ID:", team.id);
-      onCopyTeamId?.(team);
-    },
-    [onCopyTeamId]
-  );
-
-  const columns = React.useMemo(
-    () =>
-      createColumns({
-        onView: handleViewTeam,
-        onEdit: handleEditTeam,
-        onDelete: handleDeleteTeam,
-        onCopyId: handleCopyTeamId,
-      }),
-    [handleViewTeam, handleEditTeam, handleDeleteTeam, handleCopyTeamId]
-  );
-
-  const table = useReactTable({
-    data,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-      columnFilters,
-    },
-  });
-
-  const handleSearchChange = (value: string) => {
-    table.getColumn("name")?.setFilterValue(value);
+  // Handle delete click - opens the confirmation modal
+  const handleDeleteClick = (team: Team) => {
+    setTeamToDelete(team);
+    setDeleteModalOpen(true);
   };
+
+  const handleEditClick = (team: Team) => {
+    setTeamToEdit(team);
+    setEditModalOpen(true);
+  };
+
+  // Handle confirmed delete
+  const handleConfirmDelete = async () => {
+    if (teamToDelete) {
+      toast.loading(`Deleting team ${teamToDelete.name} ...`);
+      await deleteTeam(teamToDelete.id);
+      setDeleteModalOpen(false);
+      setTeamToDelete(null);
+      toast.dismiss();
+      toast.success(`Team ${teamToDelete.name} deleted successfully!`);
+    }
+  };
+
+  // Filter data based on search
+  const filteredData = React.useMemo(() => {
+    return data.filter((team) =>
+      team.name.toLowerCase().includes(searchValue.toLowerCase()),
+    );
+  }, [data, searchValue]);
+
+  // Paginate filtered data
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = React.useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredData.slice(start, start + itemsPerPage);
+  }, [filteredData, currentPage]);
+
+  // Reset page when search changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchValue]);
 
   return (
     <div className="w-full flex flex-col">
       <div className="flex items-center pb-4">
-        <SearchInput
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={handleSearchChange}
-        />
+        <SearchInput value={searchValue} onChange={setSearchValue} />
       </div>
 
-      <div className="rounded-xl border border-gray-200">
+      <div className="rounded-xl border border-gray-200 overflow-hidden">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
+            <TableRow>
+              <TableHead className="w-[300px]">
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Team Name
+                </span>
+              </TableHead>
+              <TableHead className="text-center">
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Members
+                </span>
+              </TableHead>
+              <TableHead className="w-[70px] text-right">
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Actions
+                </span>
+              </TableHead>
+            </TableRow>
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+            {paginatedData.length ? (
+              paginatedData.map((team) => (
+                <TableRow key={team.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <span className="font-medium text-gray-900">
+                        {team.name}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="text-gray-600">{team.memberCount}</div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <ActionsMenu
+                      team={team}
+                      onEdit={() => handleEditClick(team)}
+                      onDelete={() => handleDeleteClick(team)}
+                    />
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
+                  colSpan={3}
+                  className="h-24 text-center text-gray-500"
                 >
-                  No teams found.
+                  Try adding a new team!
                 </TableCell>
               </TableRow>
             )}
@@ -157,11 +145,25 @@ export default function TeamTable({
       </div>
 
       <Pagination
-        totalCount={table.getFilteredRowModel().rows.length}
-        canPrevious={table.getCanPreviousPage()}
-        canNext={table.getCanNextPage()}
-        onPrevious={() => table.previousPage()}
-        onNext={() => table.nextPage()}
+        totalCount={filteredData.length}
+        canPrevious={currentPage > 1}
+        canNext={currentPage < totalPages}
+        onPrevious={() => setCurrentPage((p) => Math.max(1, p - 1))}
+        onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        description="This action cannot be undone. This will permanently delete your team."
+        onConfirm={handleConfirmDelete}
+      />
+      {/* Edit Team Modal */}
+      <EditTeamModal
+        team={teamToEdit}
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
       />
     </div>
   );

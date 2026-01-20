@@ -2,9 +2,6 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { extractSessionData } from "@/utils/auth-helpers";
 
-const EDGE_FUNCTION_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL + "/functions/v1/store-google-refresh";
-
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
@@ -25,44 +22,39 @@ export async function GET(request: Request) {
   const { userId, email, fullName, avatarUrl, googleRefreshToken } =
     extractSessionData(data.session);
 
-  // Call Edge Function to securely store token
+  // Store user data directly using Prisma
   try {
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!serviceRoleKey) {
-      console.error("SUPABASE_SERVICE_ROLE_KEY not set");
-      return NextResponse.redirect(`${origin}/auth/auth-code-error`);
-    }
+    // Dynamic import to avoid type issues if prisma isn't set up for edge runtime
+    // defaulting to node runtime for this route is safer with prisma
+    const prisma = (await import("@/utils/prisma/prisma")).default;
 
-    const response = await fetch(EDGE_FUNCTION_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${serviceRoleKey}`,
-      },
-      body: JSON.stringify({
-        user_id: userId,
-        google_refresh_token: googleRefreshToken,
+    await prisma.profiles.upsert({
+      where: { id: userId },
+      update: {
         email,
         full_name: fullName,
         avatar_url: avatarUrl,
-      }),
+        // Only update refresh token if we got a new one
+        ...(googleRefreshToken && { google_refresh_token: googleRefreshToken }),
+      },
+      create: {
+        id: userId,
+        email,
+        full_name: fullName,
+        avatar_url: avatarUrl,
+        google_refresh_token: googleRefreshToken,
+      },
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Edge Function call failed:", errorData);
-      return NextResponse.redirect(`${origin}/auth/auth-code-error`);
-    }
   } catch (error) {
-    console.error("Failed to call Edge Function:", error);
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+    console.error("Failed to update profile:", error);
+    // Continue even if profile update fails, user is signed in
   }
 
   // Failed refresh of token, limited calendar privilege
   if (!googleRefreshToken) {
     console.warn(
       "No Google refresh token received - calendar features limited",
-      { userId }
+      { userId },
     );
   }
 

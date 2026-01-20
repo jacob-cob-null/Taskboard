@@ -1,9 +1,10 @@
 import { verifyUserAccess } from "@/actions/auth";
+import { getTeams } from "@/actions/teams";
 import WelcomeMsg from "./components/WelcomeMsg";
 import { inter } from "@/app/fonts";
-import { Button } from "@/components/ui/button";
 import { TeamTable } from "./components/team-table";
-import { Plus } from "lucide-react";
+import NewTeamBtn from "./components/NewTeamBtn";
+import CalendarPermissionsBanner from "./components/CalendarPermissionsBanner";
 
 export default async function Page({
   params,
@@ -13,6 +14,9 @@ export default async function Page({
   const { userId } = await params;
 
   const user = await verifyUserAccess(userId);
+
+  // Fetch teams data
+  const teams = await getTeams();
 
   // Google auth info is in user.user_metadata
   const { full_name, email, avatar_url, name } = user.user_metadata;
@@ -24,6 +28,9 @@ export default async function Page({
         <div className="mb-8">
           <WelcomeMsg name={name} avatarUrl={avatar_url} email={email} />
         </div>
+
+        {/* Calendar Permissions Banner */}
+        <CalendarPermissionsBanner />
 
         {/* Team Selection Card */}
         <div className="bg-white rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6">
@@ -37,14 +44,10 @@ export default async function Page({
                 Choose a workspace to continue your progress.
               </p>
             </div>
-            <Button className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Add Team
-            </Button>
+            <NewTeamBtn />
           </div>
-
           {/* Team Table */}
-          <TeamTable />
+          <TeamTable data={teams} />
         </div>
       </div>
     </div>

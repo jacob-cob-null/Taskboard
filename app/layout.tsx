@@ -1,5 +1,6 @@
 import "./globals.css";
 import { inter, instrumentSerif } from "./fonts";
+import { ToasterProvider } from "../components/ui/Toast";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -7,7 +8,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${instrumentSerif.variable}`}>
-      <body>{children}</body>
+      <body>
+        <ToasterProvider />
+        {children}
+      </body>
     </html>
   );
 }
