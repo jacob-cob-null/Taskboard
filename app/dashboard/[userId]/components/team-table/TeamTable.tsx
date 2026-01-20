@@ -16,10 +16,11 @@ import { sampleData } from "./data";
 import { SearchInput } from "./SearchInput";
 import { Pagination } from "./Pagination";
 import { ActionsMenu } from "./ActionsMenu";
+import ConfirmationModal from "./ConfirmationModal";
+import toast from "react-hot-toast";
 
 export default function TeamTable({
   data = sampleData,
-  // Edit Handler
   onEditTeam = (team: Team) => {
     console.log(team.id);
   },
@@ -28,6 +29,28 @@ export default function TeamTable({
   const [searchValue, setSearchValue] = React.useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 5;
+
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [teamToDelete, setTeamToDelete] = React.useState<Team | null>(null);
+
+  // Handle delete click - opens the confirmation modal
+  const handleDeleteClick = (team: Team) => {
+    setTeamToDelete(team);
+    setDeleteModalOpen(true);
+  };
+
+  // Handle confirmed delete
+  const handleConfirmDelete = async () => {
+    if (teamToDelete) {
+      toast.loading(`Deleting team ${teamToDelete.name} ...`);
+      await deleteTeam(teamToDelete.id);
+      setDeleteModalOpen(false);
+      setTeamToDelete(null);
+      toast.dismiss();
+      toast.success(`Team ${teamToDelete.name} deleted successfully!`);
+    }
+  };
 
   // Filter data based on search
   const filteredData = React.useMemo(() => {
@@ -93,15 +116,18 @@ export default function TeamTable({
                     <ActionsMenu
                       team={team}
                       onEdit={() => onEditTeam?.(team)}
-                      onDelete={() => deleteTeam(team.id)}
+                      onDelete={() => handleDeleteClick(team)}
                     />
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={3} className="h-24 text-center">
-                  No teams found.
+                <TableCell
+                  colSpan={3}
+                  className="h-24 text-center text-gray-500"
+                >
+                  Try adding a new team!
                 </TableCell>
               </TableRow>
             )}
@@ -115,6 +141,14 @@ export default function TeamTable({
         canNext={currentPage < totalPages}
         onPrevious={() => setCurrentPage((p) => Math.max(1, p - 1))}
         onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        description="This action cannot be undone. This will permanently delete your team."
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

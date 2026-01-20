@@ -25,6 +25,7 @@ function NewTeamBtn() {
     setIsLoading(true);
 
     try {
+      toast.loading("Creating team...");
       await createTeam(teamName);
       toast.success(`Team "${teamName}" created successfully!`);
       setTeamName("");
