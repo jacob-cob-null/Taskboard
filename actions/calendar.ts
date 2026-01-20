@@ -15,7 +15,7 @@ async function nullifyToken(userId: string) {
 }
 
 // Gets calendar client, if invalid token (400) nullify and re-auth
-async function getCalendarClient() {
+export async function getCalendarClient() {
   const user = await getUser();
   const userId = user.data.user?.id;
 
@@ -63,6 +63,18 @@ export async function checkCalendarPermissions() {
     return { hasValidToken: false, needsReauth: true };
   }
 }
+// Get calendar id
+async function getTeamCaledarId(teamId: string): Promise<string | null> {
+  const team = await prisma.teams.findUnique({
+    where: {
+      id: teamId,
+    },
+    select: {
+      google_calendar_id: true,
+    },
+  });
+  return team?.google_calendar_id ?? null;
+}
 
 // Creates a new Google Calendar for a team.
 export async function createTeamCalendar(teamName: string) {
@@ -79,54 +91,66 @@ export async function createTeamCalendar(teamName: string) {
 
     return { success: true, calendarId: response.data.id };
   } catch (error: any) {
-    console.error("Error creating calendar:", error?.message);
+    console.error(`Error creating calendar: ${teamName}`, error?.message);
     return {
       success: false,
-      error: error?.message || "Failed to create calendar",
+      error: error?.message || `Failed to create calendar: ${teamName}`,
     };
   }
 }
-
-// Creates an event in a team's calendar.
-
-export async function createCalendarEvent(
-  calendarId: string,
-  eventDetails: {
-    title: string;
-    start: Date;
-    end: Date;
-    description?: string;
-  },
-) {
+// update calendar
+export async function updateTeamCalendar(teamId: string, teamName: string) {
+  // retrieve calendar id
+  const calendarId = await getTeamCaledarId(teamId);
   try {
     const { client } = await getCalendarClient();
 
-    const response = await client.events.insert({
+    if (!calendarId) {
+      return {
+        success: false,
+        error: "Calendar not found",
+      };
+    }
+    const response = await client.calendars.update({
       calendarId: calendarId,
       requestBody: {
-        summary: eventDetails.title,
-        description: eventDetails.description,
-        start: {
-          dateTime: eventDetails.start.toISOString(),
-          timeZone: "Asia/Manila",
-        },
-        end: {
-          dateTime: eventDetails.end.toISOString(),
-          timeZone: "Asia/Manila",
-        },
+        summary: `${teamName} Calendar`,
+        description: `Shared calendar for ${teamName} team`,
+        timeZone: "Asia/Manila",
       },
     });
 
-    return {
-      success: true,
-      eventId: response.data.id,
-      eventLink: response.data.htmlLink,
-    };
+    return { success: true, calendarId: response.data.id };
   } catch (error: any) {
-    console.error("Error creating event:", error?.message);
+    console.error(`Error updating calendar: ${calendarId}`, error?.message);
     return {
       success: false,
-      error: error?.message || "Failed to create event",
+      error: error?.message || `Failed to update calendar: ${calendarId}`,
+    };
+  }
+}
+// delete calendar
+export async function deleteTeamCalendar(teamId: string) {
+  // retrieve calendar id
+  const calendarId = await getTeamCaledarId(teamId);
+  try {
+    const { client } = await getCalendarClient();
+    if (!calendarId) {
+      return {
+        success: false,
+        error: "Calendar not found",
+      };
+    }
+    const response = await client.calendars.delete({
+      calendarId: calendarId,
+    });
+
+    return { success: true, response: response.data };
+  } catch (error: any) {
+    console.error(`Error deleting calendar: ${calendarId}`, error?.message);
+    return {
+      success: false,
+      error: error?.message || `Failed to delete calendar: ${calendarId}`,
     };
   }
 }

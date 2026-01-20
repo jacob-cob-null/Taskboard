@@ -4,57 +4,13 @@ import prisma from "@/utils/prisma/prisma";
 import { getUser } from "./auth";
 import { revalidatePath } from "next/cache";
 import { Team } from "@/lib/validations";
-import { createTeamCalendar } from "./calendar";
+import {
+  createTeamCalendar,
+  deleteTeamCalendar,
+  updateTeamCalendar,
+} from "./calendar";
 
 // TODO::: make get user function reusable
-
-export async function createTeam(teamName: string) {
-  // Get user id
-  const user = await getUser();
-  const leaderId = user.data.user?.id;
-
-  if (!user || !leaderId) {
-    throw new Error("Unauthorized Action");
-  }
-
-  // Validate team inputs
-  const result = Team.safeParse({ name: teamName, leader_id: leaderId });
-  if (!result.success) {
-    return { success: false, error: result.error.issues[0].message };
-  }
-
-  try {
-    // Create Google Calendar for the team
-    const calendarResult = await createTeamCalendar(teamName);
-
-    // Create the team in database, calendar id is optional
-    const newTeam = await prisma.teams.create({
-      data: {
-        name: teamName,
-        leader_id: leaderId,
-        google_calendar_id: calendarResult.success
-          ? calendarResult.calendarId
-          : null,
-      },
-    });
-
-    if (!calendarResult.success) {
-      console.warn(
-        `Team created but calendar creation failed: ${calendarResult.error}`,
-      );
-    }
-
-    revalidatePath("/dashboard/[userId]");
-    return {
-      success: true,
-      team: newTeam,
-      calendarCreated: calendarResult.success,
-    };
-  } catch (error) {
-    console.error("Database Error:", error);
-    return { success: false, error: "Failed to create team" };
-  }
-}
 
 // Get list of teams
 export async function getTeams() {
@@ -85,6 +41,55 @@ export async function getTeams() {
   }));
 }
 
+// Create new team
+export async function createTeam(teamName: string) {
+  // Get user id
+  const user = await getUser();
+  const leaderId = user.data.user?.id;
+
+  if (!user || !leaderId) {
+    throw new Error("Unauthorized Action");
+  }
+
+  // Validate team inputs
+  const result = Team.safeParse({ name: teamName, leader_id: leaderId });
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message };
+  }
+
+  try {
+    // Create Google Calendar for the team
+    const calendarResult = await createTeamCalendar(teamName);
+
+    // Create the team in database, calendar id is optional
+    const newTeam = await prisma.teams.create({
+      data: {
+        name: teamName,
+        leader_id: leaderId,
+        google_calendar_id: calendarResult.success
+          ? calendarResult.calendarId
+          : null,
+      },
+    });
+    // error handling
+    if (!calendarResult.success) {
+      console.warn(
+        `Team created but calendar creation failed: ${calendarResult.error}`,
+      );
+    }
+
+    revalidatePath("/dashboard/[userId]");
+    return {
+      success: true,
+      team: newTeam,
+      calendarCreated: calendarResult.success,
+    };
+  } catch (error) {
+    console.error("Database Error:", error);
+    return { success: false, error: "Failed to create team" };
+  }
+}
+
 // Delete teams
 export async function deleteTeam(teamId: string) {
   const user = await getUser();
@@ -95,6 +100,13 @@ export async function deleteTeam(teamId: string) {
   }
 
   try {
+    // Delete calendar
+    const calendarResult = await deleteTeamCalendar(teamId);
+    if (!calendarResult.success) {
+      console.warn(
+        `Team deleted but calendar deletion failed: ${calendarResult.error}`,
+      );
+    }
     await prisma.teams.delete({
       where: {
         id: teamId,
@@ -115,8 +127,19 @@ export async function updateTeam(teamId: string, teamName: string) {
   if (!user || !leaderId) {
     throw new Error("Unauthorized Action");
   }
+  // Validate team inputs
+  const result = Team.safeParse({ name: teamName, leader_id: leaderId });
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message };
+  }
 
   try {
+    const calendarResult = await updateTeamCalendar(teamId, teamName);
+    if (!calendarResult.success) {
+      console.warn(
+        `Team updated but calendar update failed: ${calendarResult.error}`,
+      );
+    }
     await prisma.teams.update({
       where: {
         id: teamId,
