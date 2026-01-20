@@ -107,3 +107,28 @@ export async function deleteTeam(teamId: string) {
     return { success: false, error: "Failed to delete team" };
   }
 }
+// Update teams
+export async function updateTeam(teamId: string, teamName: string) {
+  const user = await getUser();
+  const leaderId = user.data.user?.id;
+
+  if (!user || !leaderId) {
+    throw new Error("Unauthorized Action");
+  }
+
+  try {
+    await prisma.teams.update({
+      where: {
+        id: teamId,
+      },
+      data: {
+        name: teamName,
+      },
+    });
+    revalidatePath("/dashboard/[userId]");
+    return { success: true };
+  } catch (error) {
+    console.error("Database Error:", error);
+    return { success: false, error: "Failed to update team" };
+  }
+}

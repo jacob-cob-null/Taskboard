@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/Table";
-import { deleteTeam } from "@/actions/teams";
+import { deleteTeam, updateTeam } from "@/actions/teams";
 
 import { Team, TeamTableProps } from "./types";
 import { sampleData } from "./data";
@@ -18,6 +18,7 @@ import { Pagination } from "./Pagination";
 import { ActionsMenu } from "./ActionsMenu";
 import ConfirmationModal from "./ConfirmationModal";
 import toast from "react-hot-toast";
+import EditTeamModal from "./EditTeamModal";
 
 export default function TeamTable({
   data = sampleData,
@@ -34,10 +35,18 @@ export default function TeamTable({
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const [teamToDelete, setTeamToDelete] = React.useState<Team | null>(null);
 
+  const [editModalOpen, setEditModalOpen] = React.useState(false);
+  const [teamToEdit, setTeamToEdit] = React.useState<Team | null>(null);
+
   // Handle delete click - opens the confirmation modal
   const handleDeleteClick = (team: Team) => {
     setTeamToDelete(team);
     setDeleteModalOpen(true);
+  };
+
+  const handleEditClick = (team: Team) => {
+    setTeamToEdit(team);
+    setEditModalOpen(true);
   };
 
   // Handle confirmed delete
@@ -49,6 +58,18 @@ export default function TeamTable({
       setTeamToDelete(null);
       toast.dismiss();
       toast.success(`Team ${teamToDelete.name} deleted successfully!`);
+    }
+  };
+
+  // Handle confirmed edit
+  const handleConfirmEdit = async () => {
+    if (teamToEdit) {
+      toast.loading(`Editing team ${teamToEdit.name} ...`);
+      await updateTeam(teamToEdit.id, teamToEdit.name);
+      setEditModalOpen(false);
+      setTeamToEdit(null);
+      toast.dismiss();
+      toast.success(`Team ${teamToEdit.name} edited successfully!`);
     }
   };
 
@@ -115,7 +136,7 @@ export default function TeamTable({
                   <TableCell className="text-right">
                     <ActionsMenu
                       team={team}
-                      onEdit={() => onEditTeam?.(team)}
+                      onEdit={() => handleEditClick(team)}
                       onDelete={() => handleDeleteClick(team)}
                     />
                   </TableCell>
@@ -149,6 +170,12 @@ export default function TeamTable({
         onOpenChange={setDeleteModalOpen}
         description="This action cannot be undone. This will permanently delete your team."
         onConfirm={handleConfirmDelete}
+      />
+      {/* Edit Team Modal */}
+      <EditTeamModal
+        team={teamToEdit}
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
       />
     </div>
   );
