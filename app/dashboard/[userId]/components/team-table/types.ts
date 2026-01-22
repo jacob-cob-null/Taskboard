@@ -6,6 +6,5 @@ export type Team = {
 
 export interface TeamTableProps {
   data?: Team[];
-  onEditTeam?: (team: Team) => void;
-  onDeleteTeam?: (team: Team) => void;
+  userId: string;
 }
