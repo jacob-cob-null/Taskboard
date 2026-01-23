@@ -10,7 +10,7 @@ interface TeamDashboardClientProps {
   userId: string;
 }
 
-export default function TeamDashboardClient({
+export default function TeamDashboard({
   teamId,
   userId,
 }: TeamDashboardClientProps) {

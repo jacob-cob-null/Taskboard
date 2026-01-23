@@ -2,7 +2,7 @@ import { verifyUserAccess } from "@/actions/auth";
 import { verifyTeamOwnership } from "@/actions/teams";
 import { inter, instrumentSerif } from "@/app/fonts";
 import Link from "next/link";
-import TeamDashboardClient from "./TeamDashboardClient";
+import TeamDashboard from "./TeamDashboardClient";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft } from "lucide-react";
 
@@ -39,7 +39,7 @@ async function TeamPage({
           </div>
 
           {/* Client-side Tab Navigation and Content */}
-          <TeamDashboardClient teamId={teamsId} userId={userId} />
+          <TeamDashboard teamId={teamsId} userId={userId} />
         </div>
       </div>
     </div>
