@@ -1,0 +1,202 @@
+/* Neobrutalist Calendar Styles - v3 (Lighter/Cleaner) */
+
+/* Main Container - Matches "Select a Team" Card */
+.rbc-calendar {
+  font-family: inherit;
+  background: white;
+  border: 2px solid black; /* Keep bold outer border */
+  border-radius: 1rem;
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  padding: 1.5rem;
+  height: 100%;
+}
+
+/* Toolbar styles removed - replaced by CustomToolbar component */
+
+/* Headers (Days of week) */
+.rbc-header {
+  padding: 1rem 0;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #6b7280; /* gray-500 */
+  border-bottom: 1px solid #e5e7eb !important;
+  border-left: 1px solid #e5e7eb !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rbc-header:first-child {
+  border-left: none !important;
+}
+
+/* Month View Cells */
+.rbc-month-view {
+  border: 1px solid #e5e7eb; /* Light border */
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.rbc-day-bg {
+  border-left: 1px solid #e5e7eb !important;
+}
+
+.rbc-day-bg:first-child {
+  border-left: none !important;
+}
+
+.rbc-month-row + .rbc-month-row {
+  border-top: 1px solid #e5e7eb !important;
+}
+
+/* Today Cell */
+.rbc-today {
+  background-color: #eff6ff !important; /* blue-50 */
+}
+
+.rbc-off-range-bg {
+  background-color: #fafafa !important; /* gray-50 */
+}
+
+/* Events */
+.rbc-event {
+  background-color: #2563eb !important;
+  border: none !important; /* cleaner look */
+  border-radius: 4px !important;
+  color: white !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 4px 8px !important;
+  font-size: 0.8em !important;
+  font-weight: 500;
+  overflow: visible !important;
+  z-index: 10;
+}
+
+.rbc-event:hover {
+  background-color: #1d4ed8 !important;
+  z-index: 20;
+}
+
+/* Time Grid (Week/Day) */
+.rbc-time-header-content {
+  border-left: 1px solid #e5e7eb !important;
+}
+
+.rbc-time-content {
+  border-top: 1px solid #e5e7eb !important;
+}
+
+.rbc-time-header {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.rbc-timeslot-group {
+  border-bottom: 1px solid #f3f4f6 !important; /* Very light divider */
+}
+
+.rbc-day-slot {
+  border-left: 1px solid #e5e7eb !important;
+}
+
+.rbc-time-column {
+  border-left: 1px solid #e5e7eb;
+}
+
+/* Agenda View */
+.rbc-agenda-view table.rbc-agenda-table {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.rbc-agenda-view table.rbc-agenda-table thead > tr > th {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px;
+  color: #6b7280;
+}
+
+.rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+  padding: 12px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+}
+
+/* Current Time Indicator */
+.rbc-current-time-indicator {
+  background-color: #ef4444 !important;
+  height: 2px !important;
+}
+
+/* Clip Fixes */
+.rbc-time-column {
+  overflow: visible !important;
+}
+.rbc-events-container {
+  overflow: visible !important;
+}
+.rbc-calendar {
+  overflow: visible !important;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+  .rbc-calendar {
+    padding: 1rem 0.5rem;
+    border-radius: 0.75rem;
+  }
+
+  .rbc-toolbar {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+    border-bottom: none;
+    margin-bottom: 0.5rem;
+  }
+
+  .rbc-toolbar-label {
+    text-align: center;
+    font-size: 1.1rem;
+    order: -1;
+  }
+
+  /* Group buttons */
+  .rbc-btn-group {
+    display: flex;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border-radius: 0.5rem;
+  }
+
+  .rbc-btn-group button {
+    flex: 1;
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .rbc-btn-group button:first-child {
+    border-top-left-radius: 0.5rem !important;
+    border-bottom-left-radius: 0.5rem !important;
+  }
+
+  .rbc-btn-group button:last-child {
+    border-top-right-radius: 0.5rem !important;
+    border-bottom-right-radius: 0.5rem !important;
+  }
+
+  .rbc-btn-group button + button {
+    border-left: none !important; /* Merge borders */
+  }
+
+  /* Grid Font Adjustments */
+  .rbc-header {
+    font-size: 0.75rem;
+    padding: 4px 0;
+  }
+
+  .rbc-event {
+    font-size: 0.75rem !important;
+    padding: 2px 4px !important;
+  }
+}

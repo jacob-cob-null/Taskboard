@@ -7,7 +7,8 @@ import { enUS } from "date-fns/locale";
 import { events } from "./data";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./calendar-custom.css";
-import OnSelectEvent from "./OnSelectEvent";
+import OnSelectEvent from "./(actions)/OnSelectEvent";
+import { useCalendarActions } from "./(actions)/useCalendarActions";
 import CalendarToolbar from "./CalendarToolbar";
 const locales = {
   "en-US": enUS,
@@ -22,6 +23,7 @@ const localizer = dateFnsLocalizer({
 });
 
 function TeamCalendar() {
+  const { events: calendarEvents, onSelectSlot } = useCalendarActions(events);
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState<View>("month");
 
@@ -36,13 +38,15 @@ function TeamCalendar() {
     <div className="w-full h-[600px] md:h-[700px]">
       <Calendar
         localizer={localizer}
-        events={events}
+        events={calendarEvents}
+        selectable={true}
         startAccessor="start"
         endAccessor="end"
         date={date}
         view={view}
         onNavigate={(newDate) => setDate(newDate)}
         onView={(newView) => setView(newView)}
+        onSelectSlot={onSelectSlot}
         onSelectEvent={(event) => OnSelectEvent({ event })}
         components={{
           toolbar: CalendarToolbar,
