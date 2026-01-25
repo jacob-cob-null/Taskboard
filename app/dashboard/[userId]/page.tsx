@@ -22,7 +22,7 @@ export default async function Page({
   const { full_name, email, avatar_url, name } = user.user_metadata;
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-4 sm:p-8">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-100 via-white to-blue-100 flex items-center justify-center p-4 sm:p-8">
       <div className="max-w-4xl w-full">
         {/* Welcome Section */}
         <div className="mb-8">
