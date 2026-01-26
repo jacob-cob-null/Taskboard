@@ -1,4 +1,6 @@
-export const events = [
+import { CalendarEvent } from "@/lib/calendar-utils";
+
+export const INITIAL_EVENTS: CalendarEvent[] = [
   // All-day event - Team Planning
   {
     id: "1",

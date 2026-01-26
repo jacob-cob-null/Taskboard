@@ -6,6 +6,9 @@ export interface CalendarEvent {
   start: Date;
   end: Date;
   googleEventId?: string | null;
+  allDay?: boolean;
+  desc?: string;
+  resource?: any;
 }
 
 // Util, prisma to big calendar

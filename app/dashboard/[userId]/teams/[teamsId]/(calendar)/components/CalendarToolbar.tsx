@@ -1,4 +1,5 @@
 import { View, ToolbarProps } from "react-big-calendar";
+import { CalendarEvent } from "@/lib/calendar-utils";
 import { ChevronDown, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import {
   DropdownMenu,
@@ -7,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
 
-interface CalendarToolbarProps extends ToolbarProps<any> {
+interface CalendarToolbarProps extends ToolbarProps<CalendarEvent> {
   onAddEvent?: () => void;
 }
 
