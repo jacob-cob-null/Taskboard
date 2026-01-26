@@ -4,14 +4,15 @@
 .rbc-calendar {
   font-family: inherit;
   background: white;
-  border: 2px solid black; /* Keep bold outer border */
+  border: 2px dashed #cacbcc; /* Keep bold outer border */
   border-radius: 1rem;
-  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
-  padding: 1.5rem;
+  padding: 1rem;
   height: 100%;
 }
 
 /* Toolbar styles removed - replaced by CustomToolbar component */
+
+/* Override react-big-calendar default button styles to let Tailwind work */
 
 /* Headers (Days of week) */
 .rbc-header {
