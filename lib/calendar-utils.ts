@@ -1,18 +1,8 @@
+import { z } from "zod";
 import type { announcements } from "@prisma/client";
+import { CalendarEvent } from "./validations";
 
-export interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  googleEventId?: string | null;
-  allDay?: boolean;
-  desc?: string;
-  resource?: any;
-}
-
-// Util, prisma to big calendar
-
+// Util: convert Prisma announcements to CalendarEvent
 export function announcementToCalendarEvent(
   announcement: announcements,
 ): CalendarEvent {

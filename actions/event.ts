@@ -43,3 +43,7 @@ export async function createCalendarEvent(
     };
   }
 }
+export async function getTeamEvents(teamId: string) {}
+export async function createEvent() {}
+export async function updateEvent() {}
+export async function deleteEvent() {}
