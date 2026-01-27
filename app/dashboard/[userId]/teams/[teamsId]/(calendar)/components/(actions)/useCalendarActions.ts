@@ -1,20 +1,111 @@
-import { useState, useCallback } from "react";
-import { CalendarEvent } from "@/lib/calendar-utils";
+import { useState, useCallback, useEffect } from "react";
+import { View } from "react-big-calendar";
+import {
+  CalendarEvent,
+  CreateEventInput,
+  UpdateEventInput,
+} from "@/lib/validations";
+import {
+  getTeamEvents,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+} from "@/actions/event";
+import { INITIAL_EVENTS } from "../data";
 
-export function useCalendarActions(initialEvents: CalendarEvent[]) {
-  const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
+export function useTeamCalendar(teamId: string) {
+  // 1. Data State
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const addEvent = useCallback((eventData: Omit<CalendarEvent, "id">) => {
-    const newEvent: CalendarEvent = {
-      ...eventData,
-      id: Date.now().toString(), // Simple ID generation
-    };
-    setEvents((prev) => [...prev, newEvent]);
+  // 2. Calendar View State
+  const [date, setDate] = useState(new Date());
+  const [view, setView] = useState<View>("month");
+
+  // 3. Modal Orchestration State
+  const [modal, setModal] = useState<{
+    isOpen: boolean;
+    mode: "create" | "edit";
+    selectedEvent: CalendarEvent | null;
+  }>({
+    isOpen: false,
+    mode: "create",
+    selectedEvent: null,
+  });
+
+  // 4. Initial Load
+  useEffect(() => {
+    async function loadEvents() {
+      setIsLoading(true);
+
+      // Mock data
+      const result = INITIAL_EVENTS;
+      setEvents(result);
+
+      // const result = await getTeamEvents(teamId);
+
+      // if (result.success && result.data) {
+      //   setEvents(result.data);
+      // }
+
+      setIsLoading(false);
+    }
+    loadEvents();
+  }, [teamId]);
+
+  // 5. Actions (Scaffolded for User Implementation)
+
+  const openCreate = useCallback(() => {
+    setModal({ isOpen: true, mode: "create", selectedEvent: null });
   }, []);
 
+  const openEdit = useCallback((event: CalendarEvent) => {
+    setModal({ isOpen: true, mode: "edit", selectedEvent: event });
+  }, []);
+
+  const close = useCallback(() => {
+    setModal((prev) => ({ ...prev, isOpen: false }));
+  }, []);
+
+  const submit = useCallback(
+    async (data: CreateEventInput | UpdateEventInput) => {
+      if (modal.mode === "create") {
+        // TODO: Call createEvent action
+      } else {
+        // TODO: Call updateEvent action
+      }
+      close();
+    },
+    [modal.mode, close],
+  );
+
+  const remove = useCallback(
+    async (id: string) => {
+      // TODO: Call deleteEvent action
+      close();
+    },
+    [close],
+  );
+
   return {
+    // State
     events,
-    addEvent,
-    setEvents,
+    isLoading,
+    date,
+    view,
+    modal,
+
+    // Setters
+    setDate,
+    setView,
+
+    // Actions
+    actions: {
+      openCreate,
+      openEdit,
+      close,
+      submit,
+      remove,
+    },
   };
 }

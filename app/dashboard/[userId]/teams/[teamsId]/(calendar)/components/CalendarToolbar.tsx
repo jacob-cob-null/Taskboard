@@ -1,5 +1,5 @@
 import { View, ToolbarProps } from "react-big-calendar";
-import { CalendarEvent } from "@/lib/calendar-utils";
+import { CalendarEvent } from "@/lib/validations";
 import { ChevronDown, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import {
   DropdownMenu,

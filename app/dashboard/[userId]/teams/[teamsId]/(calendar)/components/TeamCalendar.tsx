@@ -1,22 +1,20 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import {
   Calendar,
   dateFnsLocalizer,
-  View,
   ToolbarProps,
+  CalendarProps,
 } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS } from "date-fns/locale";
-import { INITIAL_EVENTS } from "./data";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./calendar-custom.css";
-import { CalendarEvent } from "@/lib/calendar-utils";
-import OnSelectEvent from "./(actions)/OnSelectEvent";
-import { useCalendarActions } from "./(actions)/useCalendarActions";
+import { CalendarEvent } from "@/lib/validations";
+import { useTeamCalendar } from "./(actions)/useCalendarActions";
 import CalendarToolbar from "./CalendarToolbar";
-import CalendarModal from "./CalendarModal";
+import EventModal from "./EventModal";
 
 const locales = {
   "en-US": enUS,
@@ -30,69 +28,55 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-function TeamCalendar() {
-  const { events: calendarEvents, addEvent } =
-    useCalendarActions(INITIAL_EVENTS);
-  const [date, setDate] = useState(new Date());
-  const [view, setView] = useState<View>("month");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+// Shared configuration to keep JSX clean
+const calendarConfig: Omit<CalendarProps<CalendarEvent, object>, "events"> = {
+  localizer,
+  selectable: true,
+  startAccessor: "start",
+  endAccessor: "end",
+  views: ["month", "week", "day", "agenda"],
+  popup: true,
+};
 
-  // Responsive view adjustment
-  useEffect(() => {
-    if (window.innerWidth < 768) {
-      setView("agenda");
-    }
-  }, []);
+export default function TeamCalendar({ teamId }: { teamId: string }) {
+  // 1. Data Layer Hook
+  const { events, view, setView, date, setDate, modal, actions } =
+    useTeamCalendar(teamId);
 
-  // Handlers
-  const handleAddEventTrigger = useCallback(() => setIsModalOpen(true), []);
-
-  const handleFormSubmit = useCallback(
-    (eventData: any) => {
-      addEvent(eventData);
-      setIsModalOpen(false);
-    },
-    [addEvent],
-  );
-
-  // Custom Toolbar Wrapper to inject the 'onAddEvent' prop
+  // 2. Custom Toolbar Injection
   const components = useMemo(
     () => ({
       toolbar: (props: ToolbarProps<CalendarEvent>) => (
-        <CalendarToolbar {...props} onAddEvent={handleAddEventTrigger} />
+        <CalendarToolbar {...props} onAddEvent={actions.openCreate} />
       ),
     }),
-    [handleAddEventTrigger],
+    [actions.openCreate],
   );
 
   return (
     <>
       <div className="w-full h-[600px] md:h-[700px]">
+        {/* TODO: Add a loading spinner based on isLoading */}
         <Calendar
-          localizer={localizer}
-          events={calendarEvents}
-          selectable={true}
-          startAccessor="start"
-          endAccessor="end"
-          date={date}
+          {...calendarConfig}
+          events={events}
           view={view}
-          onNavigate={setDate}
+          date={date}
           onView={setView}
-          onSelectEvent={(event) => OnSelectEvent({ event })}
+          onNavigate={setDate}
+          onSelectEvent={actions.openEdit}
           components={components}
-          views={["month", "week", "day", "agenda"]}
-          popup
         />
       </div>
 
-      <CalendarModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onSubmit={handleFormSubmit}
+      <EventModal
+        isOpen={modal.isOpen}
+        mode={modal.mode}
+        event={modal.selectedEvent}
+        onClose={actions.close}
+        onSubmit={actions.submit}
+        onDelete={actions.remove}
       />
     </>
   );
 }
-
-import { useEffect } from "react"; // Added missing import at top-level merge
-export default TeamCalendar;
