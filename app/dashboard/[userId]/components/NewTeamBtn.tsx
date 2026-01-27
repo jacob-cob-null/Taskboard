@@ -1,24 +1,25 @@
 "use client";
 import { useState } from "react";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/AlertDialog";
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogOverlay,
+} from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Plus } from "lucide-react";
 import { createTeam } from "@/actions/teams";
 import toast from "react-hot-toast";
+import { inter, instrumentSerif } from "@/app/fonts";
 
 function NewTeamBtn() {
   const [teamName, setTeamName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleCreate = async () => {
     if (!teamName.trim()) return;
@@ -29,6 +30,7 @@ function NewTeamBtn() {
       await createTeam(teamName);
       toast.success(`Team "${teamName}" created successfully!`);
       setTeamName("");
+      setOpen(false);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to create team",
@@ -39,44 +41,49 @@ function NewTeamBtn() {
   };
 
   return (
-    <>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button className="flex items-center justify-end gap-2">
-            <Plus className="w-4 h-4" />
-            New Team
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent className="p-4 left-4 right-4 translate-x-0 sm:left-[50%] sm:right-auto sm:translate-x-[-50%] max-w-md sm:m-0 sm:w-full">
-          <AlertDialogHeader className="p-1">
-            <AlertDialogTitle>🎯 Create New Team</AlertDialogTitle>
-          </AlertDialogHeader>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="flex items-center justify-end gap-2">
+          <Plus className="w-4 h-4" />
+          New Team
+        </Button>
+      </DialogTrigger>
+      <DialogOverlay className="bg-black/30">
+        <DialogContent className="p-8 rounded-xl outline-4 outline-black overflow-visible">
+          <DialogHeader className="p-1">
+            <DialogTitle
+              className={`${instrumentSerif.className} text-md font-base font-bold text-4xl`}
+            >
+              🎯 Create New Team
+            </DialogTitle>
+          </DialogHeader>
 
           <Input
             placeholder="Enter Team Name"
             value={teamName}
             onChange={(e) => setTeamName(e.target.value)}
-            className=" border-gray-200 focus:border-blue-500 rounded-lg"
+            className="border-gray-200 focus:border-blue-500 rounded-lg"
           />
-          <AlertDialogFooter className="flex flex-row">
-            <AlertDialogCancel
-              className="flex-1 sm:flex-none
-            "
+          <DialogFooter className="flex flex-row">
+            <Button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="flex-1 sm:flex-none bg-slate-100 text-black"
             >
               Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="flex justify-center gap-2 items-center"
+            </Button>
+            <Button
+              className="flex-1 sm:flex-none justify-center gap-2 items-center"
               disabled={isLoading || !teamName.trim()}
               onClick={handleCreate}
             >
               <Plus className="w-4 h-4" />
               {isLoading ? "Creating..." : "Add Team"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </DialogOverlay>
+    </Dialog>
   );
 }
 

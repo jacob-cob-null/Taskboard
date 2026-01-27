@@ -87,7 +87,7 @@ export default function TeamTable({
   }, [searchValue]);
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col flex-1">
       <div className="flex items-center pb-4">
         <SearchInput value={searchValue} onChange={setSearchValue} />
       </div>
