@@ -7,10 +7,10 @@ import {
 } from "@/lib/validations";
 import {
   getTeamEvents,
-  createEvent,
-  updateEvent,
-  deleteEvent,
-} from "@/actions/event";
+  createCalendarEvent,
+  updateCalendarEvent,
+  deleteCalendarEvent,
+} from "@/actions/(events)/event";
 import { INITIAL_EVENTS } from "../data";
 
 export function useTeamCalendar(teamId: string) {
@@ -22,7 +22,7 @@ export function useTeamCalendar(teamId: string) {
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState<View>("month");
 
-  // 3. Modal Orchestration State
+  // 3. Modal State
   const [modal, setModal] = useState<{
     isOpen: boolean;
     mode: "create" | "edit";
@@ -71,8 +71,20 @@ export function useTeamCalendar(teamId: string) {
     async (data: CreateEventInput | UpdateEventInput) => {
       if (modal.mode === "create") {
         // TODO: Call createEvent action
+        const result = await createCalendarEvent(teamId, data);
+        if (result.success) {
+          setEvents((prev) => [...prev, result.data]);
+        }
       } else {
         // TODO: Call updateEvent action
+        const result = await updateCalendarEvent(
+          teamId,
+          modal.selectedEvent?.id,
+          data,
+        );
+        if (result.success) {
+          setEvents((prev) => [...prev, result.data]);
+        }
       }
       close();
     },

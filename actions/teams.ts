@@ -8,7 +8,7 @@ import {
   createTeamCalendar,
   deleteTeamCalendar,
   updateTeamCalendar,
-} from "./calendar";
+} from "./(calendar)/calendar";
 import { redirect } from "next/navigation";
 import { validateUUID } from "@/lib/validations";
 // TODO::: make get user function reusable

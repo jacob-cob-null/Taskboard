@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signOut } from "@/actions/auth";
-import { checkCalendarPermissions } from "@/actions/calendar";
+import { checkCalendarPermissions } from "@/actions/(calendar)/calendar";
 
 export default function CalendarPermissionsBanner() {
   const [show, setShow] = useState(false);
