@@ -43,7 +43,24 @@ export async function createCalendarEvent(
     };
   }
 }
-export async function getTeamEvents(teamId: string) {}
-export async function createEvent() {}
+export async function getTeamEvents(calendarId: string) {
+  try {
+    const { client } = await getCalendarClient();
+    const response = await client.events.list({
+      calendarId: calendarId,
+    });
+    return {
+      success: true,
+      events: response.data.items,
+    };
+  } catch (error: any) {
+    console.error("Error getting events:", error?.message);
+    return {
+      success: false,
+      error: error?.message || "Failed to get events",
+    };
+  }
+}
+export async function createEvent(teamId: string, eventDetails: any) {}
 export async function updateEvent() {}
 export async function deleteEvent() {}
