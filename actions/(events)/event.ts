@@ -6,10 +6,15 @@ import {
   updateCalendarEvent_DB,
   deleteCalendarEvent_DB,
 } from "./event_db";
+import { getTeamCalendarId } from "../(calendar)/calendar";
+import { getUser } from "../auth";
+import prisma from "@/utils/prisma/prisma";
+
+// TODO: Can be set by user
+const DEFAULT_TIMEZONE = "Asia/Manila";
 
 // Creates an event in a team's calendar.
 export async function createCalendarEvent(
-  calendarId: string,
   teamId: string,
   eventDetails: {
     title: string;
@@ -18,25 +23,37 @@ export async function createCalendarEvent(
     description?: string;
   },
 ) {
+  let leader_id: string;
+
+  // validate and get user id
+  try {
+    const user = await getUser();
+    const idHelper = user.data.user?.id;
+    if (!idHelper) {
+      throw new Error("User not authenticated");
+    }
+    leader_id = idHelper;
+  } catch (error: any) {
+    console.error(`Error creating calendar: ${teamId}`, error?.message);
+    return {
+      success: false,
+      error: error?.message || `Failed to create calendar: ${teamId}`,
+    };
+  }
+
+  // get calendar id
+  const calendarId = await getTeamCalendarId(teamId, leader_id);
+  if (!calendarId) {
+    return {
+      success: false,
+      error: "Failed to get calendar id",
+    };
+  }
   try {
     const { client } = await getCalendarClient();
 
-    // Validate
-    const result = CalendarEventSchema.safeParse(eventDetails);
-    if (!result.success) {
-      return {
-        success: false,
-        error: result.error,
-      };
-    }
-    try {
-    } catch (error: any) {
-      console.error("Error creating event:", error?.message);
-      return {
-        success: false,
-        error: error?.message || "Failed to create event",
-      };
-    }
+    // Note: Validation is handled by the caller (Zod schema at form level)
+
     // Create Event
     const response = await client.events.insert({
       calendarId: calendarId,
@@ -45,11 +62,11 @@ export async function createCalendarEvent(
         description: eventDetails.description,
         start: {
           dateTime: eventDetails.start.toISOString(),
-          timeZone: "Asia/Manila",
+          timeZone: DEFAULT_TIMEZONE,
         },
         end: {
           dateTime: eventDetails.end.toISOString(),
-          timeZone: "Asia/Manila",
+          timeZone: DEFAULT_TIMEZONE,
         },
       },
     });
@@ -105,7 +122,33 @@ export async function createCalendarEvent(
   }
 }
 // Get team events (google)
-export async function getTeamEvents(calendarId: string) {
+export async function getTeamEvents(teamId: string) {
+  // Get user
+  let leader_id: string;
+  try {
+    const user = await getUser();
+    const idHelper = user.data.user?.id;
+    if (!idHelper) {
+      throw new Error("User not authenticated");
+    }
+    leader_id = idHelper;
+  } catch (error: any) {
+    console.error(`Error in getTeamEvents: ${teamId}`, error?.message);
+    return {
+      success: false,
+      error: error?.message || "Authentication failed",
+    };
+  }
+
+  // Resolve calendarId from teamId
+  const calendarId = await getTeamCalendarId(teamId, leader_id);
+  if (!calendarId) {
+    return {
+      success: false,
+      error: "Failed to get calendar id",
+    };
+  }
+
   try {
     const { client } = await getCalendarClient();
     const response = await client.events.list({
@@ -124,30 +167,86 @@ export async function getTeamEvents(calendarId: string) {
   }
 }
 export async function updateCalendarEvent(
-  calendarId: string,
-  eventId: string,
-  eventDetails: {
-    title: string;
-    start: Date;
-    end: Date;
-    description?: string;
+  teamId: string,
+  eventData: {
+    id: string;
+    title?: string;
+    start?: Date;
+    end?: Date;
+    googleEventId?: string | null;
+    desc?: string;
   },
 ) {
+  // Extract and validate required fields
+  const { id: eventId, title, start, end, googleEventId, desc } = eventData;
+
+  // Map desc to description for DB layer
+  const description = desc;
+
+  if (!eventId) {
+    return {
+      success: false,
+      error: "Missing required field: eventId is required for update",
+    };
+  }
+  if (!title || !start || !end) {
+    return {
+      success: false,
+      error:
+        "Missing required fields: title, start, and end are required for update",
+    };
+  }
+
+  const eventDetails = { title, start, end, description };
+  let leader_id: string;
+  // validate and get user id
+  try {
+    const user = await getUser();
+    const idHelper = user.data.user?.id;
+    if (!idHelper) {
+      throw new Error("User not authenticated");
+    }
+    leader_id = idHelper;
+  } catch (error: any) {
+    console.error(`Error creating calendar: ${teamId}`, error?.message);
+    return {
+      success: false,
+      error: error?.message || `Failed to create calendar: ${teamId}`,
+    };
+  }
+
+  // get calendar id
+  const calendarId = await getTeamCalendarId(teamId, leader_id);
+  if (!calendarId) {
+    return {
+      success: false,
+      error: "Failed to get calendar id",
+    };
+  }
+
+  // Validate googleEventId for Google API call
+  if (!googleEventId) {
+    return {
+      success: false,
+      error: "Missing googleEventId: cannot update event in Google Calendar",
+    };
+  }
+
   try {
     const { client } = await getCalendarClient();
     const response = await client.events.update({
       calendarId: calendarId,
-      eventId: eventId,
+      eventId: googleEventId,
       requestBody: {
         summary: eventDetails.title,
         description: eventDetails.description,
         start: {
           dateTime: eventDetails.start.toISOString(),
-          timeZone: "Asia/Manila",
+          timeZone: DEFAULT_TIMEZONE,
         },
         end: {
           dateTime: eventDetails.end.toISOString(),
-          timeZone: "Asia/Manila",
+          timeZone: DEFAULT_TIMEZONE,
         },
       },
     });
@@ -160,7 +259,7 @@ export async function updateCalendarEvent(
     }
     // Save changes to DB
     try {
-      await updateCalendarEvent_DB(calendarId, eventId, eventDetails);
+      await updateCalendarEvent_DB(eventId, eventDetails);
     } catch (dbError: any) {
       console.error(
         "❌ DB Consistency Failure during Update. Google Event updated, but DB failed.",
@@ -172,6 +271,12 @@ export async function updateCalendarEvent(
         `System Error: Failed to update event in DB. ${dbError.message}`,
       );
     }
+
+    return {
+      success: true,
+      eventId: response.data.id,
+      eventLink: response.data.htmlLink,
+    };
   } catch (error: any) {
     console.error("Error updating event:", error?.message);
     return {
@@ -180,12 +285,63 @@ export async function updateCalendarEvent(
     };
   }
 }
-export async function deleteCalendarEvent(calendarId: string, eventId: string) {
+export async function deleteCalendarEvent(teamId: string, eventId: string) {
+  // Get user
+  let leader_id: string;
+  try {
+    const user = await getUser();
+    const idHelper = user.data.user?.id;
+    if (!idHelper) {
+      throw new Error("User not authenticated");
+    }
+    leader_id = idHelper;
+  } catch (error: any) {
+    console.error(`Error in deleteCalendarEvent: ${teamId}`, error?.message);
+    return {
+      success: false,
+      error: error?.message || "Authentication failed",
+    };
+  }
+
+  // Resolve calendarId from teamId
+  const calendarId = await getTeamCalendarId(teamId, leader_id);
+  if (!calendarId) {
+    return {
+      success: false,
+      error: "Failed to get calendar id",
+    };
+  }
+
+  // Fetch event from DB to get googleEventId
+  let dbEvent;
+  try {
+    dbEvent = await prisma.events.findUnique({
+      where: { id: eventId },
+      select: { google_event_id: true },
+    });
+  } catch (dbError: any) {
+    console.error(
+      "Database query failed in deleteCalendarEvent:",
+      dbError.message,
+    );
+    return {
+      success: false,
+      error: `Database error: ${dbError.message}`,
+    };
+  }
+
+  if (!dbEvent || !dbEvent.google_event_id) {
+    return {
+      success: false,
+      error: "Event not found or missing Google Event ID",
+    };
+  }
+
   try {
     const { client } = await getCalendarClient();
     await client.events.delete({
       calendarId: calendarId,
-      eventId: eventId,
+      eventId: dbEvent.google_event_id,
     });
     try {
       await deleteCalendarEvent_DB(eventId);
@@ -200,6 +356,10 @@ export async function deleteCalendarEvent(calendarId: string, eventId: string) {
         `System Error: Failed to delete event in DB. ${dbError.message}`,
       );
     }
+
+    return {
+      success: true,
+    };
   } catch (error: any) {
     console.error("Error deleting event:", error?.message);
     return {

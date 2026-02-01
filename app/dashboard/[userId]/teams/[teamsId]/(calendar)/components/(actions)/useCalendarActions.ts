@@ -6,12 +6,11 @@ import {
   UpdateEventInput,
 } from "@/lib/validations";
 import {
-  getTeamEvents,
   createCalendarEvent,
   updateCalendarEvent,
   deleteCalendarEvent,
 } from "@/actions/(events)/event";
-import { INITIAL_EVENTS } from "../data";
+import { getTeamEvents_DB } from "@/actions/(events)/event_db";
 
 export function useTeamCalendar(teamId: string) {
   // 1. Data State
@@ -33,28 +32,60 @@ export function useTeamCalendar(teamId: string) {
     selectedEvent: null,
   });
 
-  // 4. Initial Load
-  useEffect(() => {
-    async function loadEvents() {
-      setIsLoading(true);
+  // 4. Load Events (extracted for refetch)
+  const loadEvents = useCallback(async () => {
+    setIsLoading(true);
 
-      // Mock data
-      const result = INITIAL_EVENTS;
-      setEvents(result);
-
-      // const result = await getTeamEvents(teamId);
-
-      // if (result.success && result.data) {
-      //   setEvents(result.data);
-      // }
-
-      setIsLoading(false);
+    try {
+      const events = await getTeamEvents_DB(teamId);
+      setEvents(events);
+    } catch (error) {
+      console.error("Failed to load events:", error);
+      setEvents([]);
     }
-    loadEvents();
+
+    setIsLoading(false);
   }, [teamId]);
 
-  // 5. Actions (Scaffolded for User Implementation)
+  // 5. Initial Load
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
+  const handleCreate = useCallback(
+    async (data: CreateEventInput) => {
+      // Map desc to description for server action
+      const result = await createCalendarEvent(teamId, {
+        title: data.title,
+        start: data.start,
+        end: data.end,
+        description: data.desc,
+      });
+      if (result.success) {
+        await loadEvents(); // Refetch canonical list
+      }
+    },
+    [teamId, loadEvents],
+  );
+  const handleUpdate = useCallback(
+    async (data: UpdateEventInput) => {
+      const result = await updateCalendarEvent(teamId, data);
+      if (result.success) {
+        await loadEvents(); // Refetch canonical list
+      }
+    },
+    [teamId, loadEvents],
+  );
+  const handleDelete = useCallback(
+    async (id: string) => {
+      const result = await deleteCalendarEvent(teamId, id);
+      if (result.success) {
+        await loadEvents(); // Refetch canonical list
+      }
+    },
+    [teamId, loadEvents],
+  );
 
+  // 5. Actions (Scaffolded for User Implementation)
   const openCreate = useCallback(() => {
     setModal({ isOpen: true, mode: "create", selectedEvent: null });
   }, []);
@@ -70,33 +101,21 @@ export function useTeamCalendar(teamId: string) {
   const submit = useCallback(
     async (data: CreateEventInput | UpdateEventInput) => {
       if (modal.mode === "create") {
-        // TODO: Call createEvent action
-        const result = await createCalendarEvent(teamId, data);
-        if (result.success) {
-          setEvents((prev) => [...prev, result.data]);
-        }
-      } else {
-        // TODO: Call updateEvent action
-        const result = await updateCalendarEvent(
-          teamId,
-          modal.selectedEvent?.id,
-          data,
-        );
-        if (result.success) {
-          setEvents((prev) => [...prev, result.data]);
-        }
+        await handleCreate(data as CreateEventInput);
+      } else if (modal.mode === "edit") {
+        await handleUpdate(data as UpdateEventInput);
       }
       close();
     },
-    [modal.mode, close],
+    [modal.mode, close, handleCreate, handleUpdate],
   );
 
   const remove = useCallback(
     async (id: string) => {
-      // TODO: Call deleteEvent action
+      await handleDelete(id);
       close();
     },
-    [close],
+    [close, handleDelete],
   );
 
   return {

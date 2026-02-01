@@ -57,18 +57,27 @@ export default function EventModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const data = {
-      title,
-      start: new Date(startStr),
-      end: new Date(endStr),
-      desc,
-      ...(mode === "edit" && { id: event!.id }),
-    };
     // TODO: Implement Zod validation and Toasting here
 
-    alert(JSON.stringify(data));
-    await onSubmit(data as any);
+    if (mode === "create") {
+      const data: CreateEventInput = {
+        title,
+        start: new Date(startStr),
+        end: new Date(endStr),
+        desc,
+      };
+      await onSubmit(data);
+    } else {
+      const data: UpdateEventInput = {
+        id: event!.id,
+        title,
+        start: new Date(startStr),
+        end: new Date(endStr),
+        desc,
+        googleEventId: event!.googleEventId,
+      };
+      await onSubmit(data);
+    }
   };
 
   return (
