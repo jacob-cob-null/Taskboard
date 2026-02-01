@@ -19,13 +19,19 @@ import { ActionsMenu } from "./ActionsMenu";
 import ConfirmationModal from "./ConfirmationModal";
 import toast from "react-hot-toast";
 import EditTeamModal from "./EditTeamModal";
+import { useRouter } from "next/navigation";
 
 export default function TeamTable({
   data = sampleData,
-  onEditTeam = (team: Team) => {
-    console.log(team.id);
-  },
+  userId,
 }: TeamTableProps) {
+  // Router init
+
+  const router = useRouter();
+  const routeToTeam = (teamId: string) => {
+    router.push(`/dashboard/${userId}/teams/${teamId}`);
+  };
+
   // Search and pagination
   const [searchValue, setSearchValue] = React.useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -81,7 +87,7 @@ export default function TeamTable({
   }, [searchValue]);
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col flex-1">
       <div className="flex items-center pb-4">
         <SearchInput value={searchValue} onChange={setSearchValue} />
       </div>
@@ -110,7 +116,7 @@ export default function TeamTable({
           <TableBody>
             {paginatedData.length ? (
               paginatedData.map((team) => (
-                <TableRow key={team.id}>
+                <TableRow key={team.id} onClick={() => routeToTeam(team.id)}>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <span className="font-medium text-gray-900">

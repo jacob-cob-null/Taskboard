@@ -16,7 +16,7 @@ export function Pagination({
   onNext,
 }: PaginationProps) {
   return (
-    <div className="flex items-center justify-between pt-4">
+    <div className="flex mt-auto items-center justify-between pt-4">
       <p className="text-sm text-blue-600">
         Showing {totalCount} team(s) total
       </p>

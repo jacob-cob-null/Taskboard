@@ -1,4 +1,4 @@
-import { verifyUserAccess } from "@/actions/auth";
+import { getUser, verifyUserAccess } from "@/actions/auth";
 import { getTeams } from "@/actions/teams";
 import WelcomeMsg from "./components/WelcomeMsg";
 import { inter } from "@/app/fonts";
@@ -22,7 +22,7 @@ export default async function Page({
   const { full_name, email, avatar_url, name } = user.user_metadata;
 
   return (
-    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-4 sm:p-8">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-100 via-white to-blue-100 flex items-center justify-center p-4 sm:p-8">
       <div className="max-w-4xl w-full">
         {/* Welcome Section */}
         <div className="mb-8">
@@ -33,8 +33,7 @@ export default async function Page({
         <CalendarPermissionsBanner />
 
         {/* Team Selection Card */}
-        <div className="bg-white rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6">
-          {/* Header */}
+        <div className="flex flex-col bg-white h-fit sm:min-h-[65vh] min-h-[80vh] sm:h-[70vh] rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
               <h2 className={`${inter.className} font-semibold text-xl`}>
@@ -47,7 +46,7 @@ export default async function Page({
             <NewTeamBtn />
           </div>
           {/* Team Table */}
-          <TeamTable data={teams} />
+          <TeamTable data={teams} userId={userId} />
         </div>
       </div>
     </div>

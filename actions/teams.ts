@@ -8,8 +8,9 @@ import {
   createTeamCalendar,
   deleteTeamCalendar,
   updateTeamCalendar,
-} from "./calendar";
-
+} from "./(calendar)/calendar";
+import { redirect } from "next/navigation";
+import { validateUUID } from "@/lib/validations";
 // TODO::: make get user function reusable
 
 // Get list of teams
@@ -39,6 +40,25 @@ export async function getTeams() {
     name: team.name,
     memberCount: team._count.teamMembers,
   }));
+}
+
+// Verify team ownership
+export async function verifyTeamOwnership(teamsId: string, userId: string) {
+  if (!validateUUID(teamsId)) {
+    throw new Error("Invalid team ID");
+  }
+
+  const team = await prisma.teams.findFirst({
+    where: {
+      id: teamsId,
+      leader_id: userId,
+    },
+  });
+  if (!team) {
+    // Return to selection
+    redirect(`/dashboard/${userId}`);
+  }
+  return team;
 }
 
 // Create new team
