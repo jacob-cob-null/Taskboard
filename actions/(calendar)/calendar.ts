@@ -5,11 +5,11 @@ import prisma from "@/utils/prisma/prisma";
 import { getCalendarClient } from "../(events)/google";
 
 // Get calendar id
-async function getTeamCalendarId(
+export async function getTeamCalendarId(
   teamId: string,
   leader_id: string,
 ): Promise<string | null> {
-  const team = await prisma.teams.findUnique({
+  const team = await prisma.teams.findFirst({
     where: {
       id: teamId,
       leader_id: leader_id,
@@ -59,6 +59,7 @@ export async function updateTeamCalendar(teamId: string, teamName: string) {
       error: "Calendar not found",
     };
   }
+
   try {
     const { client } = await getCalendarClient();
     const response = await client.calendars.update({

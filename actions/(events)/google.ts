@@ -1,3 +1,4 @@
+"use server";
 import { google } from "googleapis";
 import { getUser } from "../auth";
 import prisma from "@/utils/prisma/prisma";

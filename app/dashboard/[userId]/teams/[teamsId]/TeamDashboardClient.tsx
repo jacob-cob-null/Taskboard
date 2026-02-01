@@ -51,7 +51,7 @@ export default function TeamDashboard({
       {/* Tab Content */}
       <div className="min-h-[500px]">
         {/* Calendar */}
-        {activeTab === "calendar" && <TeamCalendar />}
+        {activeTab === "calendar" && <TeamCalendar teamId={teamId} />}
         {/* Members */}
         {activeTab === "members" && (
           <div className="flex items-center justify-center h-[400px] border-2 border-dashed border-gray-300 rounded-lg">

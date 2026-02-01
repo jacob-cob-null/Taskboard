@@ -1,3 +1,4 @@
+"use server";
 import prisma from "@/utils/prisma/prisma";
 
 // Create event PRISMA
@@ -22,7 +23,6 @@ export async function createCalendarEvent_DB(
 
 // Update event PRISMA
 export async function updateCalendarEvent_DB(
-  calendarId: string,
   eventId: string,
   eventDetails: {
     title: string;
@@ -33,7 +33,7 @@ export async function updateCalendarEvent_DB(
 ) {
   await prisma.events.update({
     where: {
-      google_event_id: eventId,
+      id: eventId,
     },
     data: {
       title: eventDetails.title,
@@ -44,17 +44,41 @@ export async function updateCalendarEvent_DB(
   });
 }
 
+// Get team events PRISMA
+export async function getTeamEvents_DB(teamId: string) {
+  const events = await prisma.events.findMany({
+    where: {
+      team_id: teamId,
+    },
+    select: {
+      id: true,
+      google_event_id: true,
+      title: true,
+      description: true,
+      event_start: true,
+      event_end: true,
+    },
+  });
+
+  // Map DB columns to CalendarEvent shape
+  return events.map((event) => ({
+    id: event.id,
+    googleEventId: event.google_event_id,
+    title: event.title,
+    desc: event.description ?? undefined,
+    start: event.event_start,
+    end: event.event_end,
+  }));
+}
+
 // Delete event PRISMA
 export async function deleteCalendarEvent_DB(event_id: string) {
   await prisma.events.delete({
     where: {
-      google_event_id: event_id,
+      id: event_id,
     },
   });
 }
 
-export default {
-  createCalendarEvent_DB,
-  updateCalendarEvent_DB,
-  deleteCalendarEvent_DB,
-};
+// No default export allowed in "use server" files.
+// Use named exports for server actions.

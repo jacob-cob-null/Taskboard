@@ -29,6 +29,25 @@ export const CalendarEventSchema = z
     path: ["end"],
   });
 
+// Calendar Object
+export const CalendarSchema = z.object({
+  id: z.string(),
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  description: z.string().optional(),
+  summary: z.string().optional(),
+  timeZone: z.string().optional(),
+  location: z.string().optional(),
+  backgroundColor: z.string().optional(),
+  foregroundColor: z.string().optional(),
+  accessRole: z.string().optional(),
+  defaultReminders: z.array(z.any()).optional(),
+  conferenceProperties: z
+    .object({
+      allowedConferenceTypes: z.array(z.string()).optional(),
+    })
+    .optional(),
+});
+
 // Infer TypeScript type from schema
 export type CalendarEvent = z.infer<typeof CalendarEventSchema>;
 

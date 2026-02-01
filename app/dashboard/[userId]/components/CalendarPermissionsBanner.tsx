@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signOut } from "@/actions/auth";
-import { checkCalendarPermissions } from "@/actions/(calendar)/calendar";
+import { checkCalendarPermissions } from "@/actions/(events)/google";
 
 export default function CalendarPermissionsBanner() {
   const [show, setShow] = useState(false);
@@ -27,7 +27,7 @@ export default function CalendarPermissionsBanner() {
   return (
     <div className="mb-4 bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4">
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <svg
             className="h-5 w-5 text-yellow-600 mt-0.5"
             fill="currentColor"
@@ -62,7 +62,7 @@ export default function CalendarPermissionsBanner() {
         </div>
         <button
           onClick={() => setShow(false)}
-          className="flex-shrink-0 text-yellow-600 hover:text-yellow-800"
+          className="shrink-0 text-yellow-600 hover:text-yellow-800"
         >
           <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
             <path
