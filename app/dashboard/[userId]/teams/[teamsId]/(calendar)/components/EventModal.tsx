@@ -14,9 +14,12 @@ import {
   CalendarEvent,
   CreateEventInput,
   UpdateEventInput,
+  CreateEventSchema,
+  UpdateEventSchema,
 } from "@/lib/validations";
 import { format } from "date-fns";
 import { inter, instrumentSerif } from "@/app/fonts";
+import toast from "react-hot-toast";
 
 interface EventModalProps {
   isOpen: boolean;
@@ -39,6 +42,7 @@ export default function EventModal({
   const [startStr, setStartStr] = useState("");
   const [endStr, setEndStr] = useState("");
   const [desc, setDesc] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Sync state with event data when editing
   useEffect(() => {
@@ -53,30 +57,59 @@ export default function EventModal({
       setEndStr("");
       setDesc("");
     }
+    setErrors({});
   }, [mode, event, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement Zod validation and Toasting here
+    setErrors({});
 
     if (mode === "create") {
-      const data: CreateEventInput = {
+      const data = {
         title,
         start: new Date(startStr),
-        end: new Date(endStr),
-        desc,
+        end: endStr ? new Date(endStr) : undefined, // Allow empty end date
+        desc: desc || undefined,
       };
-      await onSubmit(data);
+
+      // Validate with Zod
+      const result = CreateEventSchema.safeParse(data);
+      if (!result.success) {
+        const fieldErrors: Record<string, string> = {};
+        result.error.issues.forEach((err) => {
+          const path = err.path.join(".");
+          fieldErrors[path] = err.message;
+        });
+        setErrors(fieldErrors);
+        toast.error("Please fix the validation errors");
+        return;
+      }
+
+      await onSubmit(result.data);
     } else {
-      const data: UpdateEventInput = {
+      const data = {
         id: event!.id,
         title,
         start: new Date(startStr),
-        end: new Date(endStr),
-        desc,
+        end: endStr ? new Date(endStr) : undefined, // Allow empty end date
+        desc: desc || undefined,
         googleEventId: event!.googleEventId,
       };
-      await onSubmit(data);
+
+      // Validate with Zod
+      const result = UpdateEventSchema.safeParse(data);
+      if (!result.success) {
+        const fieldErrors: Record<string, string> = {};
+        result.error.issues.forEach((err) => {
+          const path = err.path.join(".");
+          fieldErrors[path] = err.message;
+        });
+        setErrors(fieldErrors);
+        toast.error("Please fix the validation errors");
+        return;
+      }
+
+      await onSubmit(result.data);
     }
   };
 
@@ -106,7 +139,11 @@ export default function EventModal({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Design Sprint"
+                className={errors.title ? "border-red-500" : ""}
               />
+              {errors.title && (
+                <p className="text-sm text-red-500">{errors.title}</p>
+              )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
@@ -115,7 +152,11 @@ export default function EventModal({
                   type="datetime-local"
                   value={startStr}
                   onChange={(e) => setStartStr(e.target.value)}
+                  className={errors.start ? "border-red-500" : ""}
                 />
+                {errors.start && (
+                  <p className="text-sm text-red-500">{errors.start}</p>
+                )}
               </div>
               <div className="grid gap-2">
                 <label className="text-sm font-medium">End Time</label>
@@ -123,7 +164,11 @@ export default function EventModal({
                   type="datetime-local"
                   value={endStr}
                   onChange={(e) => setEndStr(e.target.value)}
+                  className={errors.end ? "border-red-500" : ""}
                 />
+                {errors.end && (
+                  <p className="text-sm text-red-500">{errors.end}</p>
+                )}
               </div>
             </div>
             <div className="grid gap-2">
@@ -134,12 +179,20 @@ export default function EventModal({
                 value={desc}
                 onChange={(e) => setDesc(e.target.value)}
                 placeholder="Short description"
+                className={errors.desc ? "border-red-500" : ""}
               />
+              {errors.desc && (
+                <p className="text-sm text-red-500">{errors.desc}</p>
+              )}
             </div>
 
             <DialogFooter className="flex mt-4 justify-between items-center md:justify-between">
               {mode === "edit" && onDelete && (
-                <Button type="button" onClick={() => onDelete(event!.id)}>
+                <Button
+                  className="bg-red-500 hover:bg-red-600"
+                  type="button"
+                  onClick={() => onDelete(event!.id)}
+                >
                   Delete
                 </Button>
               )}

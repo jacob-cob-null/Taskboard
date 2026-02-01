@@ -11,23 +11,29 @@ export function validateUUID(...uuids: string[]): boolean {
   return uuids.every((uuid) => z.string().uuid().safeParse(uuid).success);
 }
 
-// Calendar Event Object
-export const CalendarEventSchema = z
-  .object({
-    id: z.string(),
-    title: z.string().min(6, "Event title must be at least 6 characters long"),
-    start: z.date(),
-    end: z.date(),
-    googleEventId: z.string().nullish(),
-    desc: z
-      .string()
-      .max(30, "Description should be 30 characters maximum")
-      .optional(),
-  })
-  .refine((data) => data.end >= data.start, {
-    message: "End date cannot be earlier than start date",
-    path: ["end"],
-  });
+// Calendar Event Object (base schema without transform)
+const CalendarEventBaseSchema = z.object({
+  id: z.string(),
+  title: z.string().min(6, "Event title must be at least 6 characters long"),
+  start: z.date(),
+  end: z.date().optional(),
+  googleEventId: z.string().nullish(),
+  desc: z
+    .string()
+    .max(30, "Description should be 30 characters maximum")
+    .optional(),
+});
+
+// Calendar Event with transform (for runtime validation)
+export const CalendarEventSchema = CalendarEventBaseSchema.transform(
+  (data) => ({
+    ...data,
+    end: data.end || data.start, // Default end to start if not provided
+  }),
+).refine((data) => data.end >= data.start, {
+  message: "End date cannot be earlier than start date",
+  path: ["end"],
+});
 
 // Calendar Object
 export const CalendarSchema = z.object({
@@ -51,14 +57,32 @@ export const CalendarSchema = z.object({
 // Infer TypeScript type from schema
 export type CalendarEvent = z.infer<typeof CalendarEventSchema>;
 
-// Input schemas for mutations
-export const CreateEventSchema = CalendarEventSchema.omit({
+// Input schemas for mutations (use base schema for omit/partial)
+export const CreateEventSchema = CalendarEventBaseSchema.omit({
   id: true,
   googleEventId: true,
-});
+})
+  .transform((data) => ({
+    ...data,
+    end: data.end || data.start, // Default end to start if not provided
+  }))
+  .refine((data) => data.end >= data.start, {
+    message: "End date cannot be earlier than start date",
+    path: ["end"],
+  });
 export type CreateEventInput = z.infer<typeof CreateEventSchema>;
 
-export const UpdateEventSchema = CalendarEventSchema.partial().required({
-  id: true,
-});
+export const UpdateEventSchema = CalendarEventBaseSchema.partial()
+  .required({
+    id: true,
+    start: true, // Require start for the transform to work
+  })
+  .transform((data) => ({
+    ...data,
+    end: data.end || data.start, // Default end to start if not provided
+  }))
+  .refine((data) => data.end >= data.start, {
+    message: "End date cannot be earlier than start date",
+    path: ["end"],
+  });
 export type UpdateEventInput = z.infer<typeof UpdateEventSchema>;

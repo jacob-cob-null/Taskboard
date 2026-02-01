@@ -11,6 +11,7 @@ import {
   deleteCalendarEvent,
 } from "@/actions/(events)/event";
 import { getTeamEvents_DB } from "@/actions/(events)/event_db";
+import toast from "react-hot-toast";
 
 export function useTeamCalendar(teamId: string) {
   // 1. Data State
@@ -53,33 +54,72 @@ export function useTeamCalendar(teamId: string) {
   }, [loadEvents]);
   const handleCreate = useCallback(
     async (data: CreateEventInput) => {
-      // Map desc to description for server action
-      const result = await createCalendarEvent(teamId, {
-        title: data.title,
-        start: data.start,
-        end: data.end,
-        description: data.desc,
-      });
-      if (result.success) {
-        await loadEvents(); // Refetch canonical list
+      const toastId = toast.loading("Creating event...");
+      try {
+        // Map desc to description for server action
+        const result = await createCalendarEvent(teamId, {
+          title: data.title,
+          start: data.start,
+          end: data.end,
+          description: data.desc,
+        });
+        if (result.success) {
+          toast.success("Event created successfully!", { id: toastId });
+          await loadEvents(); // Refetch canonical list
+        } else {
+          toast.error(result.error || "Failed to create event", {
+            id: toastId,
+          });
+        }
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to create event",
+          { id: toastId },
+        );
       }
     },
     [teamId, loadEvents],
   );
   const handleUpdate = useCallback(
     async (data: UpdateEventInput) => {
-      const result = await updateCalendarEvent(teamId, data);
-      if (result.success) {
-        await loadEvents(); // Refetch canonical list
+      const toastId = toast.loading("Updating event...");
+      try {
+        const result = await updateCalendarEvent(teamId, data);
+        if (result.success) {
+          toast.success("Event updated successfully!", { id: toastId });
+          await loadEvents(); // Refetch canonical list
+        } else {
+          toast.error(result.error || "Failed to update event", {
+            id: toastId,
+          });
+        }
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to update event",
+          { id: toastId },
+        );
       }
     },
     [teamId, loadEvents],
   );
   const handleDelete = useCallback(
     async (id: string) => {
-      const result = await deleteCalendarEvent(teamId, id);
-      if (result.success) {
-        await loadEvents(); // Refetch canonical list
+      const toastId = toast.loading("Deleting event...");
+      try {
+        const result = await deleteCalendarEvent(teamId, id);
+        if (result.success) {
+          toast.success("Event deleted successfully!", { id: toastId });
+          await loadEvents(); // Refetch canonical list
+        } else {
+          toast.error(result.error || "Failed to delete event", {
+            id: toastId,
+          });
+        }
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to delete event",
+          { id: toastId },
+        );
       }
     },
     [teamId, loadEvents],
@@ -100,20 +140,20 @@ export function useTeamCalendar(teamId: string) {
 
   const submit = useCallback(
     async (data: CreateEventInput | UpdateEventInput) => {
+      close(); // Close modal before showing toasts
       if (modal.mode === "create") {
         await handleCreate(data as CreateEventInput);
       } else if (modal.mode === "edit") {
         await handleUpdate(data as UpdateEventInput);
       }
-      close();
     },
     [modal.mode, close, handleCreate, handleUpdate],
   );
 
   const remove = useCallback(
     async (id: string) => {
+      close(); // Close modal before showing toasts
       await handleDelete(id);
-      close();
     },
     [close, handleDelete],
   );
