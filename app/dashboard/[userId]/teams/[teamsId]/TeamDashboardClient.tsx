@@ -3,6 +3,7 @@
 import { inter } from "@/app/fonts";
 import { useState } from "react";
 import TeamCalendar from "./(calendar)/components/TeamCalendar";
+import MemberPage from "./(members)/page";
 type Tab = "calendar" | "members";
 
 interface TeamDashboardClientProps {
@@ -49,16 +50,12 @@ export default function TeamDashboard({
       </div>
 
       {/* Tab Content */}
-      <div className="min-h-[500px]">
+      <div className="h-[600px] md:h-[700px]">
         {/* Calendar */}
         {activeTab === "calendar" && <TeamCalendar teamId={teamId} />}
         {/* Members */}
         {activeTab === "members" && (
-          <div className="flex items-center justify-center h-[400px] border-2 border-dashed border-gray-300 rounded-lg">
-            <p className={`${inter.className} text-gray-400 text-lg`}>
-              Members view will be added here
-            </p>
-          </div>
+          <MemberPage params={{ userId, teamsId: teamId }} />
         )}
       </div>
     </div>
