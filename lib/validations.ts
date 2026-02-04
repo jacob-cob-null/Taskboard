@@ -86,3 +86,27 @@ export const UpdateEventSchema = CalendarEventBaseSchema.partial()
     path: ["end"],
   });
 export type UpdateEventInput = z.infer<typeof UpdateEventSchema>;
+
+// Member Object
+export const MemberSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  full_name: z.string().optional(),
+  added_at: z.date().optional(),
+});
+export type Member = z.infer<typeof MemberSchema>;
+
+// Add Member Input
+export const AddMemberSchema = z.object({
+  email: z.string().email("Must be a valid email address"),
+  full_name: z.string().min(2, "Name must be at least 2 characters"),
+});
+export type AddMemberInput = z.infer<typeof AddMemberSchema>;
+
+// Import Members Input
+export const ImportMemberSchema = z.object({
+  email: z.string().email("Must be a valid email address"),
+  full_name: z.string().optional(),
+});
+export const ImportMembersSchema = z.array(ImportMemberSchema);
+export type ImportMembersInput = z.infer<typeof ImportMembersSchema>;

@@ -9,6 +9,7 @@ import {
 import { getTeamCalendarId } from "../(calendar)/calendar";
 import { getUser } from "../auth";
 import prisma from "@/utils/prisma/prisma";
+import { getMembersForTeam } from "../members";
 
 // TODO: Can be set by user
 const DEFAULT_TIMEZONE = "Asia/Manila";
@@ -54,9 +55,17 @@ export async function createCalendarEvent(
 
     // Note: Validation is handled by the caller (Zod schema at form level)
 
+    // Fetch team members to add as attendees
+    const membersResult = await getMembersForTeam(teamId);
+    const attendees =
+      membersResult.success && membersResult.members
+        ? membersResult.members.map((m) => ({ email: m.email }))
+        : [];
+
     // Create Event
     const response = await client.events.insert({
       calendarId: calendarId,
+      sendUpdates: "none", // Don't send email notifications
       requestBody: {
         summary: eventDetails.title,
         description: eventDetails.description,
@@ -68,6 +77,7 @@ export async function createCalendarEvent(
           dateTime: eventDetails.end.toISOString(),
           timeZone: DEFAULT_TIMEZONE,
         },
+        attendees: attendees,
       },
     });
 
@@ -234,9 +244,18 @@ export async function updateCalendarEvent(
 
   try {
     const { client } = await getCalendarClient();
+
+    // Fetch team members to add as attendees
+    const membersResult = await getMembersForTeam(teamId);
+    const attendees =
+      membersResult.success && membersResult.members
+        ? membersResult.members.map((m) => ({ email: m.email }))
+        : [];
+
     const response = await client.events.update({
       calendarId: calendarId,
       eventId: googleEventId,
+      sendUpdates: "none", // Don't send email notifications
       requestBody: {
         summary: eventDetails.title,
         description: eventDetails.description,
@@ -248,6 +267,7 @@ export async function updateCalendarEvent(
           dateTime: eventDetails.end.toISOString(),
           timeZone: DEFAULT_TIMEZONE,
         },
+        attendees: attendees,
       },
     });
     // Check if event was updated before db update
