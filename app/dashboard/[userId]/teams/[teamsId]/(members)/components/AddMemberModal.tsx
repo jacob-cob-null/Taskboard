@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,25 +10,24 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/AlertDialog";
 import { Input } from "@/components/ui/Input";
-import { Pencil } from "lucide-react";
-import { updateMember } from "@/actions/members";
+import { UserPlus } from "lucide-react";
+import { addMemberToTeam } from "@/actions/members";
 import toast from "react-hot-toast";
 import { AddMemberSchema } from "@/lib/validations";
 
-export interface Member {
-  id: string;
-  email: string;
-  full_name: string | null;
-  added_at?: Date;
-}
-
-interface EditMemberModalProps {
-  member: Member | null;
+interface AddMemberModalProps {
+  teamId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 }
 
-function EditMemberModal({ member, open, onOpenChange }: EditMemberModalProps) {
+function AddMemberModal({
+  teamId,
+  open,
+  onOpenChange,
+  onSuccess,
+}: AddMemberModalProps) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -36,18 +35,7 @@ function EditMemberModal({ member, open, onOpenChange }: EditMemberModalProps) {
     {},
   );
 
-  // Sync input with member data when modal opens
-  useEffect(() => {
-    if (member && open) {
-      setFullName(member.full_name || "");
-      setEmail(member.email);
-      setErrors({}); // Clear errors when opening
-    }
-  }, [member, open]);
-
-  const handleUpdate = async () => {
-    if (!member) return;
-
+  const handleAdd = async () => {
     // Check for empty fields first
     if (!email.trim() || !fullName.trim()) {
       toast.error("Please fill in all required fields");
@@ -74,20 +62,30 @@ function EditMemberModal({ member, open, onOpenChange }: EditMemberModalProps) {
     setIsLoading(true);
 
     try {
-      toast.loading("Updating member...");
-      await updateMember(member.id, {
-        email: validation.data.email,
-        full_name: validation.data.full_name || undefined,
-      });
-      toast.dismiss();
-      toast.success(
-        `Member "${validation.data.full_name || validation.data.email}" updated successfully!`,
+      toast.loading("Adding member...");
+      const result = await addMemberToTeam(
+        teamId,
+        validation.data.email,
+        validation.data.full_name,
       );
-      onOpenChange(false);
+
+      toast.dismiss();
+
+      if (result.success) {
+        toast.success(
+          `Member "${validation.data.full_name || validation.data.email}" added successfully!`,
+        );
+        setFullName("");
+        setEmail("");
+        onOpenChange(false);
+        onSuccess?.();
+      } else {
+        toast.error(result.error || "Failed to add member");
+      }
     } catch (error) {
       toast.dismiss();
       toast.error(
-        error instanceof Error ? error.message : "Failed to update member",
+        error instanceof Error ? error.message : "Failed to add member",
       );
     } finally {
       setIsLoading(false);
@@ -98,7 +96,7 @@ function EditMemberModal({ member, open, onOpenChange }: EditMemberModalProps) {
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="p-4 left-4 right-4 translate-x-0 sm:left-[50%] sm:right-auto sm:translate-x-[-50%] max-w-md sm:m-0 sm:w-full">
         <AlertDialogHeader className="p-1">
-          <AlertDialogTitle>Edit Member</AlertDialogTitle>
+          <AlertDialogTitle>Add Member</AlertDialogTitle>
         </AlertDialogHeader>
 
         <div className="space-y-3">
@@ -131,7 +129,7 @@ function EditMemberModal({ member, open, onOpenChange }: EditMemberModalProps) {
           </div>
           <div>
             <Input
-              placeholder="Email"
+              placeholder="Email *"
               type="email"
               value={email}
               onChange={(e) => {
@@ -151,6 +149,7 @@ function EditMemberModal({ member, open, onOpenChange }: EditMemberModalProps) {
                 }
               }}
               className="border-gray-200 focus:border-blue-500 rounded-lg"
+              required
             />
             {errors.email && (
               <p className="text-sm text-red-600 mt-1">{errors.email}</p>
@@ -165,10 +164,10 @@ function EditMemberModal({ member, open, onOpenChange }: EditMemberModalProps) {
           <AlertDialogAction
             className="flex justify-center gap-2 items-center"
             disabled={isLoading || !email.trim() || !fullName.trim()}
-            onClick={handleUpdate}
+            onClick={handleAdd}
           >
-            <Pencil className="w-4 h-4" />
-            {isLoading ? "Updating..." : "Update Member"}
+            <UserPlus className="w-4 h-4" />
+            {isLoading ? "Adding..." : "Add Member"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -176,4 +175,4 @@ function EditMemberModal({ member, open, onOpenChange }: EditMemberModalProps) {
   );
 }
 
-export default EditMemberModal;
+export default AddMemberModal;
