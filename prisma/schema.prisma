@@ -242,7 +242,7 @@ model announcements {
   title           String
   content         String
   team_id         String       @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  resend_batch_id String?      @unique
+  resend_batch_id String?
   email_status    EmailStatus? @default(PENDING)
   sent_at         DateTime?    @db.Timestamptz(6)
   error_message   String?

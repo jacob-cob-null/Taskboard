@@ -27,7 +27,14 @@ export function AnnouncementEmail({
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <style>{`
+          .announcement-content ul { padding-left: 20px !important; margin: 10px 0 !important; }
+          .announcement-content ol { padding-left: 20px !important; margin: 10px 0 !important; }
+          .announcement-content li { margin-bottom: 5px !important; }
+          .announcement-content p { margin: 10px 0 !important; }
+        `}</style>
+      </Head>
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
@@ -36,7 +43,11 @@ export function AnnouncementEmail({
           {memberName && <Text style={greeting}>Hi {memberName},</Text>}
 
           <Section style={contentSection}>
-            <Text style={text}>{content}</Text>
+            <div
+              className="announcement-content"
+              style={text}
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
           </Section>
 
           <Section style={footer}>
@@ -94,7 +105,6 @@ const text = {
   color: "#333",
   fontSize: "16px",
   lineHeight: "26px",
-  whiteSpace: "pre-wrap" as const,
 };
 
 const footer = {

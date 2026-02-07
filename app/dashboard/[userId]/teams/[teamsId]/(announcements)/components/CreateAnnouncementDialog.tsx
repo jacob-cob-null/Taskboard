@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { createAnnouncement } from "@/actions/(announcements)/crud";
 import {
   AlertDialog,
@@ -15,6 +16,14 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Megaphone } from "lucide-react";
 import toast from "react-hot-toast";
+
+// Dynamic import to avoid SSR issues with TipTap
+const RichTextEditor = dynamic(() => import("@/components/ui/RichTextEditor"), {
+  ssr: false,
+  loading: () => (
+    <div className="border border-gray-200 rounded-lg p-3 min-h-[160px] bg-gray-50 animate-pulse" />
+  ),
+});
 
 interface CreateAnnouncementDialogProps {
   teamId: string;
@@ -31,7 +40,9 @@ export default function CreateAnnouncementDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit() {
-    if (!title.trim() || !content.trim()) {
+    // Strip HTML to check if content is empty
+    const textContent = content.replace(/<[^>]*>/g, "").trim();
+    if (!title.trim() || !textContent) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -67,12 +78,12 @@ export default function CreateAnnouncementDialog({
           <span className="hidden md:inline">Create Announcement</span>
         </button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="p-4 left-4 right-4 translate-x-0 sm:left-[50%] sm:right-auto sm:translate-x-[-50%] max-w-md sm:m-0 sm:w-full">
-        <AlertDialogHeader className="p-1">
+      <AlertDialogContent className="p-4 left-4 right-4 translate-x-0 sm:left-[50%] sm:right-auto sm:translate-x-[-50%] max-w-md sm:max-w-2xl sm:m-0 sm:w-full h-[500px] sm:h-[480px] flex flex-col">
+        <AlertDialogHeader className="p-1 shrink-0">
           <AlertDialogTitle>Create Announcement</AlertDialogTitle>
         </AlertDialogHeader>
 
-        <div className="space-y-3">
+        <div className="space-y-3 flex-1 flex flex-col overflow-hidden">
           <div>
             <Input
               placeholder="Title *"
@@ -86,27 +97,25 @@ export default function CreateAnnouncementDialog({
               {title.length}/200 characters
             </p>
           </div>
-          <div>
-            <textarea
-              placeholder="Content *"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+          <div className="flex-1 min-h-0">
+            <RichTextEditor
+              content={content}
+              onChange={setContent}
+              placeholder="Write your announcement content..."
               maxLength={2000}
-              rows={8}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 resize-none"
-              required
             />
-            <p className="text-xs text-gray-500 mt-1">
-              {content.length}/2000 characters
-            </p>
           </div>
         </div>
 
-        <AlertDialogFooter className="flex flex-row gap-2">
+        <AlertDialogFooter className="flex flex-row gap-2 shrink-0">
           <AlertDialogCancel className="flex-1">Cancel</AlertDialogCancel>
           <AlertDialogAction
             className="flex-1 flex justify-center gap-2 items-center"
-            disabled={isSubmitting || !title.trim() || !content.trim()}
+            disabled={
+              isSubmitting ||
+              !title.trim() ||
+              !content.replace(/<[^>]*>/g, "").trim()
+            }
             onClick={handleSubmit}
           >
             <Megaphone className="w-4 h-4" />

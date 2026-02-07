@@ -124,7 +124,7 @@ export default function AnnouncementsClient({
         </div>
       ) : (
         <>
-          <div className="grid gap-4">
+          <div className="bg-white border border-gray-200 rounded-lg divide-y divide-gray-200">
             {paginatedAnnouncements.map((announcement) => (
               <AnnouncementCard
                 key={announcement.id.toString()}
