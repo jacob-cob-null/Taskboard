@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import { createAnnouncement } from "@/actions/(announcements)/crud";
-import { Button } from "@/components/ui/Button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/Dialog";
-import { Plus } from "lucide-react";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/AlertDialog";
+import { Input } from "@/components/ui/Input";
+import { Megaphone } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface CreateAnnouncementDialogProps {
@@ -27,8 +30,12 @@ export default function CreateAnnouncementDialog({
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSubmit() {
+    if (!title.trim() || !content.trim()) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -53,76 +60,60 @@ export default function CreateAnnouncementDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="w-4 h-4" />
-          Create Announcement
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Create New Announcement</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <button className="px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2">
+          <Megaphone className="w-5 h-5" />
+          <span className="hidden md:inline">Create Announcement</span>
+        </button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="p-4 left-4 right-4 translate-x-0 sm:left-[50%] sm:right-auto sm:translate-x-[-50%] max-w-md sm:m-0 sm:w-full">
+        <AlertDialogHeader className="p-1">
+          <AlertDialogTitle>Create Announcement</AlertDialogTitle>
+        </AlertDialogHeader>
+
+        <div className="space-y-3">
           <div>
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Title <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="title"
-              type="text"
+            <Input
+              placeholder="Title *"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               maxLength={200}
+              className="border-gray-200 focus:border-blue-500 rounded-lg"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter announcement title"
             />
             <p className="text-xs text-gray-500 mt-1">
               {title.length}/200 characters
             </p>
           </div>
-
           <div>
-            <label
-              htmlFor="content"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Content <span className="text-red-500">*</span>
-            </label>
             <textarea
-              id="content"
+              placeholder="Content *"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               maxLength={2000}
+              rows={8}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 resize-none"
               required
-              rows={6}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              placeholder="Enter announcement content"
             />
             <p className="text-xs text-gray-500 mt-1">
               {content.length}/2000 characters
             </p>
           </div>
+        </div>
 
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              onClick={() => setOpen(false)}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create"}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <AlertDialogFooter className="flex flex-row gap-2">
+          <AlertDialogCancel className="flex-1">Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            className="flex-1 flex justify-center gap-2 items-center"
+            disabled={isSubmitting || !title.trim() || !content.trim()}
+            onClick={handleSubmit}
+          >
+            <Megaphone className="w-4 h-4" />
+            {isSubmitting ? "Creating..." : "Create"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

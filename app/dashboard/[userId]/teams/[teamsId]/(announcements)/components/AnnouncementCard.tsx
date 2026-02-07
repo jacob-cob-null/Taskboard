@@ -78,10 +78,10 @@ export default function AnnouncementCard({
     announcement.email_status === EmailStatus.FAILED;
 
   return (
-    <div className="bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] p-4 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow">
+    <div className="bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] p-3 sm:p-4 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all overflow-hidden">
       {/* Header */}
       <div className="flex justify-between items-start gap-4 mb-3">
-        <h3 className="font-bold text-lg text-gray-900">
+        <h3 className="font-bold text-base sm:text-lg text-gray-900 truncate">
           {announcement.title}
         </h3>
         <EmailStatusBadge
@@ -98,7 +98,7 @@ export default function AnnouncementCard({
       </p>
 
       {/* Metadata */}
-      <div className="text-xs text-gray-500 mb-4">
+      <div className="text-xs text-gray-500 mb-3">
         <p>Created: {format(new Date(announcement.created_at), "PPp")}</p>
         {announcement.sent_at && (
           <p>Sent: {format(new Date(announcement.sent_at), "PPp")}</p>
@@ -117,31 +117,34 @@ export default function AnnouncementCard({
       {/* Actions */}
       <div className="flex gap-2">
         {canSend && (
-          <Button onClick={handleSend} disabled={isSending} className="flex-1">
+          <button
+            onClick={handleSend}
+            disabled={isSending}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 text-sm"
+          >
             {isSending ? (
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-20 sm:w-24" />
+              <div className="h-4 w-4 bg-blue-300 rounded animate-pulse" />
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                <span className="hidden sm:inline">Send Email</span>
+                <span className="hidden sm:inline">Send</span>
               </>
             )}
-          </Button>
+          </button>
         )}
 
         {canDelete && (
-          <Button
+          <button
             onClick={handleDelete}
             disabled={isDeleting}
-            variant="neutral"
-            className="border-red-300 text-red-600 hover:bg-red-50"
+            className="px-3 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
           >
             {isDeleting ? (
-              <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+              <div className="h-4 w-4 bg-red-200 rounded animate-pulse" />
             ) : (
               <Trash2 className="w-4 h-4" />
             )}
-          </Button>
+          </button>
         )}
       </div>
     </div>

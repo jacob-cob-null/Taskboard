@@ -59,7 +59,7 @@ export async function sendAnnouncement(
     if (announcement.email_status !== EmailStatus.PENDING) {
       return {
         success: false,
-        error: `Announcement already ${announcement.email_status.toLowerCase()}`,
+        error: `Announcement already ${(announcement.email_status ?? "processed").toLowerCase()}`,
       };
     }
 
