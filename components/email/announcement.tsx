@@ -4,6 +4,7 @@ import {
   Head,
   Heading,
   Html,
+  Link,
   Preview,
   Section,
   Text,
@@ -41,6 +42,11 @@ export function AnnouncementEmail({
           <Section style={footer}>
             <Text style={footerText}>
               This announcement was sent by {teamName}
+            </Text>
+            <Text style={footerText}>
+              <Link href="#" style={link}>
+                Unsubscribe from team announcements
+              </Link>
             </Text>
           </Section>
         </Container>
@@ -101,4 +107,9 @@ const footerText = {
   color: "#666",
   fontSize: "12px",
   lineHeight: "16px",
+};
+
+const link = {
+  color: "#0066cc",
+  textDecoration: "underline",
 };

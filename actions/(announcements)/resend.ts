@@ -1,6 +1,7 @@
 import { resend } from "@/lib/resend";
 import { render } from "@react-email/render";
 import { AnnouncementEmail } from "@/components/email/announcement";
+import React from "react";
 
 interface SendEmailParams {
   recipients: Array<{ email: string; name?: string }>;
@@ -62,19 +63,26 @@ export async function sendAnnouncementEmail({
   for (let i = 0; i < recipients.length; i += BATCH_LIMIT) {
     const batch = recipients.slice(i, i + BATCH_LIMIT);
 
-    // Create email for each recipient
-    const emails = batch.map((recipient) => ({
+    // Render all emails in the batch (render is async in v2.x)
+    const renderedHtmls = await Promise.all(
+      batch.map((recipient) =>
+        render(
+          React.createElement(AnnouncementEmail, {
+            title,
+            content,
+            teamName,
+            memberName: recipient.name,
+          }),
+        ),
+      ),
+    );
+
+    // Create email objects with rendered HTML
+    const emails = batch.map((recipient, index) => ({
       from: "Taskboard <onboarding@resend.dev>", // TODO: Replace with your verified domain
       to: recipient.email,
       subject: `${teamName}: ${title}`,
-      html: render(
-        AnnouncementEmail({
-          title,
-          content,
-          teamName,
-          memberName: recipient.name,
-        }),
-      ),
+      html: renderedHtmls[index],
     }));
 
     // Send batch

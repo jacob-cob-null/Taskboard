@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/utils/prisma/prisma";
 import { EmailStatus } from "@prisma/client";
+import { Webhook } from "svix";
 
 /**
  * Resend webhook handler
@@ -10,8 +11,6 @@ import { EmailStatus } from "@prisma/client";
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify webhook signature
-    const signature = request.headers.get("svix-signature");
     const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
 
     if (!webhookSecret) {
@@ -22,16 +21,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Implement proper signature verification
-    // Resend uses Svix for webhooks, verify signature here
-    // For now, we'll accept all requests (NOT PRODUCTION READY)
-    if (!signature) {
-      console.warn("No signature provided in webhook");
-      // In production, return 401 here
+    // Get webhook headers for signature verification
+    const svixId = request.headers.get("svix-id");
+    const svixTimestamp = request.headers.get("svix-timestamp");
+    const svixSignature = request.headers.get("svix-signature");
+
+    if (!svixId || !svixTimestamp || !svixSignature) {
+      console.warn("Missing svix headers");
+      return NextResponse.json(
+        { error: "Missing webhook headers" },
+        { status: 401 },
+      );
     }
 
-    // Parse webhook payload
-    const payload = await request.json();
+    // Get raw body for signature verification
+    const body = await request.text();
+
+    // Verify webhook signature
+    const wh = new Webhook(webhookSecret);
+    let payload: any;
+
+    try {
+      payload = wh.verify(body, {
+        "svix-id": svixId,
+        "svix-timestamp": svixTimestamp,
+        "svix-signature": svixSignature,
+      });
+    } catch (err) {
+      console.error("Webhook signature verification failed:", err);
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
+
+    // Parse verified payload
     const { type, data } = payload;
 
     console.log("Received webhook:", type, data);
