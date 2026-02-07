@@ -4,7 +4,8 @@ import { inter } from "@/app/fonts";
 import { useState } from "react";
 import TeamCalendar from "./(calendar)/components/TeamCalendar";
 import MemberPage from "./(members)/page";
-type Tab = "calendar" | "members";
+import AnnouncementsClient from "./(announcements)/components/AnnouncementsClient";
+type Tab = "calendar" | "members" | "announcements";
 
 interface TeamDashboardClientProps {
   teamId: string;
@@ -47,15 +48,32 @@ export default function TeamDashboard({
             <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
           )}
         </button>
+        <button
+          onClick={() => setActiveTab("announcements")}
+          className={`${inter.className} pb-3 px-1 font-medium transition-colors relative ${
+            activeTab === "announcements"
+              ? "text-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Announcements
+          {activeTab === "announcements" && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
+          )}
+        </button>
       </div>
 
       {/* Tab Content */}
-      <div className="h-[600px] md:h-[700px]">
+      <div className="h-[600px] md:h-[700px] overflow-y-auto">
         {/* Calendar */}
         {activeTab === "calendar" && <TeamCalendar teamId={teamId} />}
         {/* Members */}
         {activeTab === "members" && (
           <MemberPage params={{ userId, teamsId: teamId }} />
+        )}
+        {/* Announcements */}
+        {activeTab === "announcements" && (
+          <AnnouncementsClient teamId={teamId} />
         )}
       </div>
     </div>
