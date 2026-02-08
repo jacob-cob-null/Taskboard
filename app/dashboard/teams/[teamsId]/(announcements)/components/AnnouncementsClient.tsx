@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { getAnnouncementsForTeam } from "@/actions/(announcements)/crud";
 import CreateAnnouncementDialog from "./CreateAnnouncementDialog";
 import AnnouncementCard from "./AnnouncementCard";
@@ -34,7 +34,7 @@ export default function AnnouncementsClient({
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  async function loadAnnouncements() {
+  const loadAnnouncements = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
@@ -51,7 +51,7 @@ export default function AnnouncementsClient({
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [teamId]);
 
   useEffect(() => {
     loadAnnouncements();
