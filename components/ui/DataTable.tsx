@@ -81,8 +81,8 @@ export function DataTable<T extends Record<string, any>>({
   }, [searchValue]);
 
   return (
-    <div className="w-full flex flex-col flex-1 justify-between">
-      <div className="flex flex-col gap-4">
+    <div className="w-full h-full flex flex-col">
+      <div className="flex flex-col gap-4 flex-shrink-0">
         {SearchComponent && (
           <div className="flex items-center justify-between gap-4">
             <SearchComponent value={searchValue} onChange={setSearchValue} />
@@ -92,7 +92,7 @@ export function DataTable<T extends Record<string, any>>({
           </div>
         )}
 
-        <div className="rounded-xl border border-gray-200 overflow-hidden">
+        <div className="rounded-xl border border-gray-200 overflow-hidden flex-1 min-h-0">
           <Table>
             <TableHeader>
               <TableRow>
