@@ -1,4 +1,4 @@
-import { getUser, requireAuth } from "@/actions/auth";
+import { requireAuth } from "@/actions/auth";
 import { getTeams } from "@/actions/teams";
 import WelcomeMsg from "./components/WelcomeMsg";
 import { inter } from "@/app/fonts";
@@ -18,7 +18,7 @@ export default async function Page() {
   const teams = await getTeams();
 
   // Google auth info is in user.user_metadata
-  const { full_name, email, avatar_url, name } = user.user_metadata;
+  const { email, avatar_url, name } = user.user_metadata;
 
   return (
     <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-100 via-white to-blue-100 flex items-center justify-center p-4 sm:p-8">

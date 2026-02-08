@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     // Verify webhook signature
     const wh = new Webhook(webhookSecret);
-    let payload: any;
+    let payload: unknown;
 
     try {
       payload = wh.verify(body, {
@@ -53,7 +53,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse verified payload
-    const { type, data } = payload;
+    const { type, data } = payload as {
+      type: string;
+      data: Record<string, unknown>;
+    };
 
     console.log("Received webhook:", type, data);
 
@@ -61,13 +64,14 @@ export async function POST(request: NextRequest) {
     // Note: Resend's webhook structure may vary, adjust as needed
     const batchId = data?.batch_id || data?.id;
 
-    if (!batchId) {
-      console.warn("No batch ID in webhook payload");
+    // Type guard: ensure batchId is a string
+    if (!batchId || typeof batchId !== "string") {
+      console.warn("Invalid or missing batch ID in webhook payload");
       return NextResponse.json({ received: true }, { status: 200 });
     }
 
     // Find announcement by batch ID
-    // Handle both single ID and JSON array of IDs
+    // Handle both exact match and JSON array containing the ID
     const announcements = await prisma.announcements.findMany({
       where: {
         OR: [
@@ -102,7 +106,7 @@ export async function POST(request: NextRequest) {
 async function processWebhookEvent(
   announcementId: bigint,
   eventType: string,
-  eventData: any,
+  eventData: Record<string, unknown>,
 ) {
   try {
     const announcement = await prisma.announcements.findUnique({

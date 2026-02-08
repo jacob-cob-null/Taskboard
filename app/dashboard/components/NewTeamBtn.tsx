@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/Button";
 import { Plus, Users } from "lucide-react";
 import { createTeam } from "@/actions/teams";
 import toast from "react-hot-toast";
-import { inter, instrumentSerif } from "@/app/fonts";
+import { instrumentSerif } from "@/app/fonts";
 
 function NewTeamBtn() {
   const [teamName, setTeamName] = useState("");

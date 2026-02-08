@@ -45,6 +45,7 @@ export default function EventModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Sync state with event data when editing
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     if (mode === "edit" && event) {
       setTitle(event.title);

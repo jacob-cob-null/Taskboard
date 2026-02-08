@@ -40,11 +40,11 @@ export interface DataTableProps<T> {
   }>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function DataTable<T extends Record<string, any>>({
   data,
   columns,
   searchKey,
-  searchPlaceholder = "Search...",
   emptyMessage = "No results found.",
   onRowClick,
   renderActions,

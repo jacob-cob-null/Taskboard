@@ -51,7 +51,7 @@ export async function sendAnnouncementEmail({
 }: SendEmailParams): Promise<BatchSendResult> {
   // Validate all emails first
   const emails = recipients.map((r) => r.email);
-  const { valid, invalid } = validateEmails(emails);
+  const { invalid } = validateEmails(emails);
 
   if (invalid.length > 0) {
     throw new Error(`Invalid email addresses: ${invalid.join(", ")}`);
@@ -106,7 +106,7 @@ export async function sendAnnouncementEmail({
 /**
  * Query Resend API for batch status (for reconciliation)
  */
-export async function getBatchStatus(batchId: string) {
+export async function getBatchStatus() {
   try {
     // Note: Resend doesn't have a direct batch status endpoint yet
     // This is a placeholder for future implementation

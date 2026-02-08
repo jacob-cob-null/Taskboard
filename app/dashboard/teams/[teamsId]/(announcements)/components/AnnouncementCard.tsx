@@ -47,7 +47,7 @@ export default function AnnouncementCard({
           id: toastId,
         });
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred while sending", { id: toastId });
     } finally {
       setIsSending(false);
@@ -69,7 +69,7 @@ export default function AnnouncementCard({
           id: toastId,
         });
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred while deleting", { id: toastId });
     } finally {
       setIsDeleting(false);

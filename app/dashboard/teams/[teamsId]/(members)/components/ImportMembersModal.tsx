@@ -2,7 +2,6 @@
 import { useState, useRef } from "react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogFooter,
@@ -150,11 +149,9 @@ function ImportMembersModal({
         setFileError(result.error || "Failed to import members");
         // Don't close modal - let user try again
       }
-    } catch (error) {
+    } catch {
       toast.dismiss();
-      setFileError(
-        error instanceof Error ? error.message : "Failed to import members",
-      );
+      setFileError("Failed to import members");
       // Don't close modal on error
     } finally {
       setIsLoading(false);

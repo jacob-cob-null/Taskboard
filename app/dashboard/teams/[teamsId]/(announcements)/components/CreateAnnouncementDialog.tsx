@@ -63,7 +63,7 @@ export default function CreateAnnouncementDialog({
       } else {
         toast.error(result.error || "Failed to create announcement");
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred");
     } finally {
       setIsSubmitting(false);

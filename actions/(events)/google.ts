@@ -44,13 +44,18 @@ export async function checkCalendarPermissions() {
     const { client } = await getCalendarClient();
     await client.calendarList.list({ maxResults: 1 });
     return { hasValidToken: true, needsReauth: false };
-  } catch (error: any) {
-    console.error("Permission check failed:", error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Permission check failed:", message);
 
     // If any auth error, we need re-auth
+    const errorCode = (error as { code?: number })?.code;
+    const errorResponse = (
+      error as { response?: { data?: { error?: string } } }
+    )?.response?.data?.error;
     const isAuthError =
-      [400, 401, 403].includes(error?.code) ||
-      error?.response?.data?.error === "invalid_request";
+      (errorCode !== undefined && [400, 401, 403].includes(errorCode)) ||
+      errorResponse === "invalid_request";
 
     if (isAuthError) {
       const user = await getUser();

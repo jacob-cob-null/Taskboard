@@ -35,11 +35,12 @@ export async function createTeamCalendar(teamName: string) {
     });
 
     return { success: true, calendarId: response.data.id };
-  } catch (error: any) {
-    console.error(`Error creating calendar: ${teamName}`, error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Error creating calendar: ${teamName}`, message);
     return {
       success: false,
-      error: error?.message || `Failed to create calendar: ${teamName}`,
+      error: message || `Failed to create calendar: ${teamName}`,
     };
   }
 }
@@ -72,11 +73,12 @@ export async function updateTeamCalendar(teamId: string, teamName: string) {
     });
 
     return { success: true, calendarId: response.data.id };
-  } catch (error: any) {
-    console.error(`Error updating calendar: ${calendarId}`, error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Error updating calendar: ${calendarId}`, message);
     return {
       success: false,
-      error: error?.message || `Failed to update calendar: ${calendarId}`,
+      error: message || `Failed to update calendar: ${calendarId}`,
     };
   }
 }
@@ -103,11 +105,12 @@ export async function deleteTeamCalendar(teamId: string) {
     });
 
     return { success: true, response: response.data };
-  } catch (error: any) {
-    console.error(`Error deleting calendar: ${calendarId}`, error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Error deleting calendar: ${calendarId}`, message);
     return {
       success: false,
-      error: error?.message || `Failed to delete calendar: ${calendarId}`,
+      error: message || `Failed to delete calendar: ${calendarId}`,
     };
   }
 }
