@@ -1,10 +1,7 @@
 import { requireAuth } from "@/actions/auth";
 import { verifyTeamOwnership } from "@/actions/teams";
-import { inter, instrumentSerif } from "@/app/fonts";
-import Link from "next/link";
 import TeamDashboard from "./TeamDashboardClient";
-import { Button } from "@/components/ui/Button";
-import { ArrowLeft } from "lucide-react";
+import { TeamHeader } from "./TeamHeader";
 
 async function TeamPage({ params }: { params: Promise<{ teamsId: string }> }) {
   // Verify if user has access to this team
@@ -20,21 +17,7 @@ async function TeamPage({ params }: { params: Promise<{ teamsId: string }> }) {
         {/* Team Dashboard Card */}
         <div className="bg-white rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4 sm:p-6">
           {/* Header */}
-          <div className="flex flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <div>
-              <h1
-                className={`${instrumentSerif.className} font-bold text-4xl sm:text-5xl`}
-              >
-                Team <span className="text-blue-600 italic">{team.name}</span>
-              </h1>
-            </div>
-            <Button asChild>
-              <Link href={`/dashboard`}>
-                <ArrowLeft className="w-4 h-4" />
-                <p className={`${inter.className} hidden sm:block`}>Back</p>
-              </Link>
-            </Button>
-          </div>
+          <TeamHeader teamName={team.name} />
 
           {/* Client-side Tab Navigation and Content */}
           <TeamDashboard teamId={teamsId} />

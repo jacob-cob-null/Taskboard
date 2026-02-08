@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { instrumentSerif, inter } from "@/app/fonts";
 import Image from "next/image";
 import { signOut } from "@/actions/auth";
 import { LogOut } from "lucide-react";
+import { annotate } from "rough-notation";
 
 interface WelcomeMsgProps {
   name: string;
@@ -12,6 +14,20 @@ interface WelcomeMsgProps {
 }
 
 function WelcomeMsg({ name, avatarUrl, email }: WelcomeMsgProps) {
+  const nameRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (nameRef.current) {
+      const annotation = annotate(nameRef.current, {
+        type: "underline",
+        padding: -3,
+        strokeWidth: 3,
+        color: "#2563eb",
+      });
+      annotation.show();
+    }
+  }, []);
+
   const handleSignOut = async () => {
     await signOut();
   };
@@ -19,7 +35,10 @@ function WelcomeMsg({ name, avatarUrl, email }: WelcomeMsgProps) {
   return (
     <div className="flex flex-col gap-4">
       <h1 className={`${instrumentSerif.className} text-4xl sm:text-5xl`}>
-        Welcome back, <span className="text-blue-600 italic">{name}</span>
+        Welcome back,{" "}
+        <span ref={nameRef} className="text-blue-600 italic">
+          {name}
+        </span>
       </h1>
       <div className="flex flex-row justify-between items-center gap-3">
         <div className="flex items-center w-fit justify-center gap-2 px-3 py-1.5 bg-white rounded-full border border-gray-200 shadow-sm">

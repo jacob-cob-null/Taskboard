@@ -165,7 +165,10 @@ function ImportMembersModal({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="p-4 left-4 right-4 translate-x-0 sm:left-[50%] sm:right-auto sm:translate-x-[-50%] max-w-md sm:m-0 sm:w-full">
         <AlertDialogHeader className="p-1">
-          <AlertDialogTitle>Import Members</AlertDialogTitle>
+          <AlertDialogTitle className="flex items-center gap-2">
+            <Upload className="w-6 h-6 text-blue-600" />
+            Import Members
+          </AlertDialogTitle>
           <AlertDialogDescription className="text-sm text-gray-600">
             Upload a CSV file with columns: email, full_name
           </AlertDialogDescription>

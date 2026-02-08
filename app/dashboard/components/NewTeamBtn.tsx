@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { Plus } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { createTeam } from "@/actions/teams";
 import toast from "react-hot-toast";
 import { inter, instrumentSerif } from "@/app/fonts";
@@ -52,9 +52,10 @@ function NewTeamBtn() {
         <DialogContent className="p-8 rounded-xl outline-4 outline-black overflow-visible">
           <DialogHeader className="p-1">
             <DialogTitle
-              className={`${instrumentSerif.className} text-md font-base font-bold text-4xl`}
+              className={`${instrumentSerif.className} text-md font-base font-bold text-4xl flex items-center gap-3`}
             >
-              🎯 Create New Team
+              <Users className="w-10 h-10 text-blue-600" />
+              Create New Team
             </DialogTitle>
           </DialogHeader>
 
