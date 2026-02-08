@@ -2,7 +2,6 @@ import MemberTable from "./components/MemberTable";
 
 interface MemberPageProps {
   params: {
-    userId: string;
     teamsId: string;
   };
 }

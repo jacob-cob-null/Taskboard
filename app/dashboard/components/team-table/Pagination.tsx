@@ -16,7 +16,10 @@ export function Pagination({
   onNext,
 }: PaginationProps) {
   return (
-    <div className="flex mt-auto items-center justify-between pt-4">
+    <nav
+      aria-label="Pagination"
+      className="flex mt-auto items-center justify-between pt-4"
+    >
       <p className="text-sm text-blue-600">
         Showing {totalCount} team(s) total
       </p>
@@ -27,6 +30,7 @@ export function Pagination({
           onClick={onPrevious}
           disabled={!canPrevious}
           className="text-gray-600 disabled:opacity-50"
+          aria-label="Go to previous page"
         >
           Previous
         </Button>
@@ -35,10 +39,11 @@ export function Pagination({
           size="sm"
           onClick={onNext}
           disabled={!canNext}
+          aria-label="Go to next page"
         >
           Next
         </Button>
       </div>
-    </div>
+    </nav>
   );
 }

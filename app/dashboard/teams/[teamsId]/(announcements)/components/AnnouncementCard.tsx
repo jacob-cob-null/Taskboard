@@ -8,7 +8,7 @@ import EmailStatusBadge from "./EmailStatusBadge";
 import { Send, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
-import ConfirmationModal from "@/app/dashboard/[userId]/components/team-table/ConfirmationModal";
+import ConfirmationModal from "@/app/dashboard/components/team-table/ConfirmationModal";
 
 interface AnnouncementCardProps {
   announcement: {

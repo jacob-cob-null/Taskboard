@@ -9,19 +9,15 @@ type Tab = "calendar" | "members" | "announcements";
 
 interface TeamDashboardClientProps {
   teamId: string;
-  userId: string;
 }
 
-export default function TeamDashboard({
-  teamId,
-  userId,
-}: TeamDashboardClientProps) {
+export default function TeamDashboard({ teamId }: TeamDashboardClientProps) {
   const [activeTab, setActiveTab] = useState<Tab>("calendar");
 
   return (
     <div>
       {/* Tab Navigation */}
-      <div className="flex gap-6 border-b-2 border-gray-200 mb-6">
+      <div className="flex gap-3 border-b-2 border-gray-200 mb-2">
         <button
           onClick={() => setActiveTab("calendar")}
           className={`${inter.className} pb-3 px-1 font-medium transition-colors relative ${
@@ -64,17 +60,33 @@ export default function TeamDashboard({
       </div>
 
       {/* Tab Content */}
-      <div className="h-[600px] md:h-[700px] overflow-y-auto">
+      <div className="h-[600px] md:h-[700px]">
         {/* Calendar */}
-        {activeTab === "calendar" && <TeamCalendar teamId={teamId} />}
+        <div
+          className={
+            activeTab === "calendar" ? "block h-full" : "hidden h-full"
+          }
+        >
+          <TeamCalendar teamId={teamId} />
+        </div>
         {/* Members */}
-        {activeTab === "members" && (
-          <MemberPage params={{ userId, teamsId: teamId }} />
-        )}
+        <div
+          className={
+            activeTab === "members"
+              ? "block h-full overflow-y-auto p-2"
+              : "hidden h-full"
+          }
+        >
+          <MemberPage params={{ teamsId: teamId }} />
+        </div>
         {/* Announcements */}
-        {activeTab === "announcements" && (
+        <div
+          className={
+            activeTab === "announcements" ? "block h-full" : "hidden h-full"
+          }
+        >
           <AnnouncementsClient teamId={teamId} />
-        )}
+        </div>
       </div>
     </div>
   );

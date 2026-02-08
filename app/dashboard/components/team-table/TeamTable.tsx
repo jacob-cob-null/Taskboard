@@ -13,10 +13,7 @@ import toast from "react-hot-toast";
 import EditTeamModal from "./EditTeamModal";
 import { useRouter } from "next/navigation";
 
-export default function TeamTable({
-  data = sampleData,
-  userId,
-}: TeamTableProps) {
+export default function TeamTable({ data = sampleData }: TeamTableProps) {
   const router = useRouter();
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const [teamToDelete, setTeamToDelete] = React.useState<Team | null>(null);
@@ -71,9 +68,7 @@ export default function TeamTable({
         searchKey="name"
         searchPlaceholder="Search teams..."
         emptyMessage="Try adding a new team!"
-        onRowClick={(team) =>
-          router.push(`/dashboard/${userId}/teams/${team.id}`)
-        }
+        onRowClick={(team) => router.push(`/dashboard/teams/${team.id}`)}
         renderActions={(team) => (
           <ActionsMenu
             team={team}

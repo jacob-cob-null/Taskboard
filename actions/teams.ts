@@ -56,7 +56,7 @@ export async function verifyTeamOwnership(teamsId: string, userId: string) {
   });
   if (!team) {
     // Return to selection
-    redirect(`/dashboard/${userId}`);
+    redirect(`/dashboard`);
   }
   return team;
 }
@@ -98,7 +98,7 @@ export async function createTeam(teamName: string) {
       );
     }
 
-    revalidatePath("/dashboard/[userId]");
+    revalidatePath("/dashboard");
     return {
       success: true,
       team: newTeam,
@@ -132,7 +132,7 @@ export async function deleteTeam(teamId: string) {
         id: teamId,
       },
     });
-    revalidatePath("/dashboard/[userId]");
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
     console.error("Database Error:", error);
@@ -168,7 +168,7 @@ export async function updateTeam(teamId: string, teamName: string) {
         name: teamName,
       },
     });
-    revalidatePath("/dashboard/[userId]");
+    revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
     console.error("Database Error:", error);

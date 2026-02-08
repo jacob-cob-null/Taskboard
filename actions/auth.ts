@@ -10,15 +10,11 @@ export async function getUser() {
   return user;
 }
 
-// Verify if slug matches retrieved user id to be redirected
-export async function verifyUserAccess(slug: string) {
+// Verify if user is authenticated
+export async function requireAuth() {
   const { data } = await getUser();
   if (!data?.user) {
     redirect("/login");
-  }
-  const id = data.user.id;
-  if (id !== slug) {
-    redirect("/404");
   }
   return data.user;
 }

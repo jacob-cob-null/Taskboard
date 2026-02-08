@@ -1,19 +1,18 @@
-import { getUser, verifyUserAccess } from "@/actions/auth";
+import { getUser, requireAuth } from "@/actions/auth";
 import { getTeams } from "@/actions/teams";
 import WelcomeMsg from "./components/WelcomeMsg";
 import { inter } from "@/app/fonts";
 import { TeamTable } from "./components/team-table";
 import NewTeamBtn from "./components/NewTeamBtn";
 import CalendarPermissionsBanner from "./components/CalendarPermissionsBanner";
+import type { Metadata } from "next";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ userId: string }>;
-}) {
-  const { userId } = await params;
+export const metadata: Metadata = {
+  title: "Dashboard | Taskboard",
+};
 
-  const user = await verifyUserAccess(userId);
+export default async function Page() {
+  const user = await requireAuth();
 
   // Fetch teams data
   const teams = await getTeams();
@@ -46,7 +45,7 @@ export default async function Page({
             <NewTeamBtn />
           </div>
           {/* Team Table */}
-          <TeamTable data={teams} userId={userId} />
+          <TeamTable data={teams} />
         </div>
       </div>
     </div>

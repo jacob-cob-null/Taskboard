@@ -3,10 +3,10 @@
 import * as React from "react";
 import { DataTable, ColumnDef } from "@/components/ui/DataTable";
 import { getMembersForTeam, removeMemberFromTeam } from "@/actions/members";
-import { SearchInput } from "@/app/dashboard/[userId]/components/team-table/SearchInput";
-import { Pagination } from "@/app/dashboard/[userId]/components/team-table/Pagination";
+import { SearchInput } from "@/app/dashboard/components/team-table/SearchInput";
+import { Pagination } from "@/app/dashboard/components/team-table/Pagination";
 import { MemberActionsMenu } from "./MemberActionsMenu";
-import ConfirmationModal from "@/app/dashboard/[userId]/components/team-table/ConfirmationModal";
+import ConfirmationModal from "@/app/dashboard/components/team-table/ConfirmationModal";
 import EditMemberModal, { Member } from "./EditMemberModal";
 import AddMemberModal from "./AddMemberModal";
 import ImportMembersModal from "./ImportMembersModal";
@@ -125,40 +125,42 @@ export default function MemberTable({ teamId }: MemberTableProps) {
       {isLoading ? (
         <MemberTableSkeleton />
       ) : (
-        <DataTable<Member>
-          data={members}
-          columns={columns}
-          searchKey="full_name"
-          searchPlaceholder="Search members..."
-          emptyMessage="No members in this team yet."
-          headerActions={
-            <>
-              <button
-                onClick={() => setAddModalOpen(true)}
-                className="px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
-              >
-                <UserPlus className="w-5 h-5" />
-                <span className="hidden md:inline">Add Member</span>
-              </button>
-              <button
-                onClick={() => setImportModalOpen(true)}
-                className="px-3 md:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center gap-2"
-              >
-                <Upload className="w-5 h-5" />
-                <span className="hidden md:inline">Import</span>
-              </button>
-            </>
-          }
-          renderActions={(member) => (
-            <MemberActionsMenu
-              member={member}
-              onEdit={() => handleEditClick(member)}
-              onRemove={() => handleRemoveClick(member)}
-            />
-          )}
-          SearchComponent={SearchInput}
-          PaginationComponent={Pagination}
-        />
+        <div className="flex-1 flex flex-col">
+          <DataTable<Member>
+            data={members}
+            columns={columns}
+            searchKey="full_name"
+            searchPlaceholder="Search members..."
+            emptyMessage="No members in this team yet."
+            headerActions={
+              <>
+                <button
+                  onClick={() => setAddModalOpen(true)}
+                  className="px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
+                >
+                  <UserPlus className="w-5 h-5" />
+                  <span className="hidden md:inline">Add Member</span>
+                </button>
+                <button
+                  onClick={() => setImportModalOpen(true)}
+                  className="px-3 md:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center gap-2"
+                >
+                  <Upload className="w-5 h-5" />
+                  <span className="hidden md:inline">Import</span>
+                </button>
+              </>
+            }
+            renderActions={(member) => (
+              <MemberActionsMenu
+                member={member}
+                onEdit={() => handleEditClick(member)}
+                onRemove={() => handleRemoveClick(member)}
+              />
+            )}
+            SearchComponent={SearchInput}
+            PaginationComponent={Pagination}
+          />
+        </div>
       )}
 
       <ConfirmationModal

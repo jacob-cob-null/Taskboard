@@ -6,5 +6,4 @@ export type Team = {
 
 export interface TeamTableProps {
   data?: Team[];
-  userId: string;
 }
