@@ -61,7 +61,7 @@ export async function GET(request: Request) {
   // Redirect to dashboard
   const forwardedHost = request.headers.get("x-forwarded-host");
   const isProduction = process.env.NODE_ENV === "production";
-  const dashboardUrl = `/dashboard/${userId}`;
+  const dashboardUrl = `/dashboard`;
 
   if (isProduction && forwardedHost) {
     return NextResponse.redirect(`https://${forwardedHost}${dashboardUrl}`);
