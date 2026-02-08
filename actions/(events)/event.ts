@@ -1,6 +1,5 @@
 "use server";
 import { getCalendarClient } from "./google";
-import { CalendarEventSchema } from "@/lib/validations";
 import {
   createCalendarEvent_DB,
   updateCalendarEvent_DB,
@@ -34,11 +33,12 @@ export async function createCalendarEvent(
       throw new Error("User not authenticated");
     }
     leader_id = idHelper;
-  } catch (error: any) {
-    console.error(`Error creating calendar: ${teamId}`, error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Error creating calendar: ${teamId}`, message);
     return {
       success: false,
-      error: error?.message || `Failed to create calendar: ${teamId}`,
+      error: message || `Failed to create calendar: ${teamId}`,
     };
   }
 
@@ -99,8 +99,10 @@ export async function createCalendarEvent(
         eventDetails,
         calendarEventId,
       );
-    } catch (dbError: any) {
-      console.error("DB Error. Rolling back Google Event...", dbError.message);
+    } catch (dbError: unknown) {
+      const dbMessage =
+        dbError instanceof Error ? dbError.message : String(dbError);
+      console.error("DB Error. Rolling back Google Event...", dbMessage);
 
       // Delete event from google calendar
       try {
@@ -115,7 +117,7 @@ export async function createCalendarEvent(
         // TODO: Send alert to admin / deadlock queue
       }
 
-      throw new Error(`System Error: Failed to save event. ${dbError.message}`);
+      throw new Error(`System Error: Failed to save event. ${dbMessage}`);
     }
 
     return {
@@ -123,11 +125,12 @@ export async function createCalendarEvent(
       eventId: response.data.id,
       eventLink: response.data.htmlLink,
     };
-  } catch (error: any) {
-    console.error("Error creating event:", error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Error creating event:", message);
     return {
       success: false,
-      error: error?.message || "Failed to create event",
+      error: message || "Failed to create event",
     };
   }
 }
@@ -142,11 +145,12 @@ export async function getTeamEvents(teamId: string) {
       throw new Error("User not authenticated");
     }
     leader_id = idHelper;
-  } catch (error: any) {
-    console.error(`Error in getTeamEvents: ${teamId}`, error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Error in getTeamEvents: ${teamId}`, message);
     return {
       success: false,
-      error: error?.message || "Authentication failed",
+      error: message || "Authentication failed",
     };
   }
 
@@ -168,11 +172,12 @@ export async function getTeamEvents(teamId: string) {
       success: true,
       events: response.data.items,
     };
-  } catch (error: any) {
-    console.error("Error getting events:", error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Error getting events:", message);
     return {
       success: false,
-      error: error?.message || "Failed to get events",
+      error: message || "Failed to get events",
     };
   }
 }
@@ -217,11 +222,12 @@ export async function updateCalendarEvent(
       throw new Error("User not authenticated");
     }
     leader_id = idHelper;
-  } catch (error: any) {
-    console.error(`Error creating calendar: ${teamId}`, error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Error creating calendar: ${teamId}`, message);
     return {
       success: false,
-      error: error?.message || `Failed to create calendar: ${teamId}`,
+      error: message || `Failed to create calendar: ${teamId}`,
     };
   }
 
@@ -280,15 +286,17 @@ export async function updateCalendarEvent(
     // Save changes to DB
     try {
       await updateCalendarEvent_DB(eventId, eventDetails);
-    } catch (dbError: any) {
+    } catch (dbError: unknown) {
+      const dbMessage =
+        dbError instanceof Error ? dbError.message : String(dbError);
       console.error(
         "❌ DB Consistency Failure during Update. Google Event updated, but DB failed.",
-        dbError.message,
+        dbMessage,
       );
       // NOTE: Rolling back an update is complex (needs old data).
       // For now, we log the inconsistency.
       throw new Error(
-        `System Error: Failed to update event in DB. ${dbError.message}`,
+        `System Error: Failed to update event in DB. ${dbMessage}`,
       );
     }
 
@@ -297,11 +305,12 @@ export async function updateCalendarEvent(
       eventId: response.data.id,
       eventLink: response.data.htmlLink,
     };
-  } catch (error: any) {
-    console.error("Error updating event:", error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Error updating event:", message);
     return {
       success: false,
-      error: error?.message || "Failed to update event",
+      error: message || "Failed to update event",
     };
   }
 }
@@ -315,11 +324,12 @@ export async function deleteCalendarEvent(teamId: string, eventId: string) {
       throw new Error("User not authenticated");
     }
     leader_id = idHelper;
-  } catch (error: any) {
-    console.error(`Error in deleteCalendarEvent: ${teamId}`, error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Error in deleteCalendarEvent: ${teamId}`, message);
     return {
       success: false,
-      error: error?.message || "Authentication failed",
+      error: message || "Authentication failed",
     };
   }
 
@@ -339,14 +349,13 @@ export async function deleteCalendarEvent(teamId: string, eventId: string) {
       where: { id: eventId },
       select: { google_event_id: true },
     });
-  } catch (dbError: any) {
-    console.error(
-      "Database query failed in deleteCalendarEvent:",
-      dbError.message,
-    );
+  } catch (dbError: unknown) {
+    const dbMessage =
+      dbError instanceof Error ? dbError.message : String(dbError);
+    console.error("Database query failed in deleteCalendarEvent:", dbMessage);
     return {
       success: false,
-      error: `Database error: ${dbError.message}`,
+      error: `Database error: ${dbMessage}`,
     };
   }
 
@@ -365,26 +374,29 @@ export async function deleteCalendarEvent(teamId: string, eventId: string) {
     });
     try {
       await deleteCalendarEvent_DB(eventId);
-    } catch (dbError: any) {
+    } catch (dbError: unknown) {
+      const dbMessage =
+        dbError instanceof Error ? dbError.message : String(dbError);
       console.error(
         "❌ DB Consistency Failure during Delete. Google Event deleted, but DB failed (Zombie Data).",
-        dbError.message,
+        dbMessage,
       );
       // NOTE: Rolling back a delete means RE-CREATING the event (new ID).
       // For now, we log the inconsistency.
       throw new Error(
-        `System Error: Failed to delete event in DB. ${dbError.message}`,
+        `System Error: Failed to delete event in DB. ${dbMessage}`,
       );
     }
 
     return {
       success: true,
     };
-  } catch (error: any) {
-    console.error("Error deleting event:", error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Error deleting event:", message);
     return {
       success: false,
-      error: error?.message || "Failed to delete event",
+      error: message || "Failed to delete event",
     };
   }
 }

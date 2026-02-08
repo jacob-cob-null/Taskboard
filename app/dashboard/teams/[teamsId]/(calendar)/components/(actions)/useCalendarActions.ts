@@ -49,6 +49,7 @@ export function useTeamCalendar(teamId: string) {
   }, [teamId]);
 
   // 5. Initial Load
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     loadEvents();
   }, [loadEvents]);

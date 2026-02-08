@@ -1,4 +1,4 @@
-import { Inter, Archivo, Instrument_Serif } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 
 export const inter = Inter({
   subsets: ["latin"],

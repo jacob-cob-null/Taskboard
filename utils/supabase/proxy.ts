@@ -18,17 +18,17 @@ export async function updateSession(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           supabaseResponse = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   // Do not run code between createServerClient and
@@ -41,7 +41,7 @@ export async function updateSession(request: NextRequest) {
   // Routes that don't require authentication
   const PUBLIC_ROUTES = ["/hero", "/about", "/login", "/auth/callback", "/404"];
   const isPublicRoute = PUBLIC_ROUTES.some((route) =>
-    request.nextUrl.pathname.startsWith(route)
+    request.nextUrl.pathname.startsWith(route),
   );
 
   // Skip auth check for public routes to prevent redirect loops
@@ -53,7 +53,7 @@ export async function updateSession(request: NextRequest) {
   try {
     const { data } = await supabase.auth.getClaims();
     user = data?.claims;
-  } catch (error) {
+  } catch {
     //redirect login
     const url = request.nextUrl.clone();
     url.pathname = "/login";

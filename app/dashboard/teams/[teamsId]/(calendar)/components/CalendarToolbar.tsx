@@ -13,16 +13,8 @@ interface CalendarToolbarProps extends ToolbarProps<CalendarEvent> {
 }
 
 export default function CalendarToolbar(props: CalendarToolbarProps) {
-  const {
-    date,
-    view,
-    views,
-    label,
-    onView,
-    onNavigate,
-    localizer,
-    onAddEvent,
-  } = props;
+  const { view, views, label, onView, onNavigate, localizer, onAddEvent } =
+    props;
 
   const navigate = (action: "PREV" | "NEXT" | "TODAY") => {
     onNavigate(action);
@@ -37,8 +29,6 @@ export default function CalendarToolbar(props: CalendarToolbarProps) {
   const btnFirst = "rounded-l-md";
   const btnLast = "rounded-r-md";
   const btnMiddle = "-ml-px";
-  const btnActive =
-    "bg-[#2563eb] text-white border-[#2563eb] hover:bg-[#1d4ed8] z-20";
 
   return (
     <div className="flex flex-col gap-4 mb-4 border-b border-[#e5e7eb] pb-4">

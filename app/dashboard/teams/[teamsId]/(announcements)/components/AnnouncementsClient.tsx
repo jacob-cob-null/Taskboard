@@ -46,7 +46,7 @@ export default function AnnouncementsClient({
       } else {
         setError(result.error || "Failed to load announcements");
       }
-    } catch (err) {
+    } catch {
       setError("An error occurred while loading announcements");
     } finally {
       setIsLoading(false);
@@ -55,7 +55,7 @@ export default function AnnouncementsClient({
 
   useEffect(() => {
     loadAnnouncements();
-  }, [teamId]);
+  }, [teamId, loadAnnouncements]);
 
   // Calculate pagination
   const totalPages = Math.ceil(announcements.length / ITEMS_PER_PAGE);

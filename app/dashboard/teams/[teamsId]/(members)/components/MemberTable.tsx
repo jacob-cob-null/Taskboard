@@ -79,7 +79,7 @@ export default function MemberTable({ teamId }: MemberTableProps) {
         setMembers(previousMembers);
         toast.error(result.error || "Failed to remove member");
       }
-    } catch (error) {
+    } catch {
       // Rollback on error
       setMembers(previousMembers);
       toast.dismiss();
