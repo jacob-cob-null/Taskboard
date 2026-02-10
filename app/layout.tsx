@@ -6,6 +6,11 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Taskboard",
   description: "A collaborative task management application",
+  icons: {
+    icon: "/clipboard.png",
+    shortcut: "/clipboard.png",
+    apple: "/clipboard.png",
+  },
 };
 
 export default function RootLayout({

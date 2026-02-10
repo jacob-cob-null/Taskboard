@@ -2,7 +2,6 @@
 import { useEffect, useRef } from "react";
 import SignInBtn from "./components/SignInButton";
 import Star15 from "./components/Star";
-import { RiDashboardHorizontalFill } from "react-icons/ri";
 import { instrumentSerif, inter } from "@/app/fonts";
 import { annotate } from "rough-notation";
 import Image from "next/image";
@@ -27,13 +26,16 @@ export default function Page() {
     <div className="bg-stone-50 w-full min-h-screen flex flex-col lg:grid lg:grid-cols-3 relative overflow-hidden">
       {/*Main Content*/}
       <div className="flex flex-col justify-between items-start gap-6 p-6 sm:p-8 lg:p-12 flex-1 lg:flex-none z-10">
-        <div className="flex items-center justify-start gap-3 w-full">
-          <RiDashboardHorizontalFill className="text-xl sm:text-2xl mb-0.5" />
+        <div className="flex items-center justify-start gap-2 w-full">
+          <Image
+            src="/clipboard.png"
+            width={24}
+            height={24}
+            alt="TaskBoard Logo"
+            className="w-5 h-5 sm:w-6 sm:h-6 mb-1.5"
+          />
           <h1
-            className={`${inter.className}
-            antialiased
-            text-md
-            font-light`}
+            className={`${instrumentSerif.className} text-lg sm:text-xl tracking-tight`}
           >
             TaskBoard
           </h1>
