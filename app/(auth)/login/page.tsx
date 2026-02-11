@@ -5,7 +5,8 @@ import Star15 from "./components/Star";
 import { instrumentSerif, inter } from "@/app/fonts";
 import { annotate } from "rough-notation";
 import Image from "next/image";
-import AboutBtn from "./components/AboutBtn";
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 export default function Page() {
   const emphasisRef = useRef<HTMLSpanElement>(null);
 
@@ -53,7 +54,20 @@ export default function Page() {
           <p
             className={`${inter.className} text-[10px] sm:text-xs text-gray-500`}
           >
-            By logging into TaskBoard, you agree to the Terms and Conditions
+            By logging into TaskBoard, you agree to the{" "}
+            <Link
+              href="/terms"
+              className="underline hover:text-blue-600 transition-colors"
+            >
+              Terms and Conditions
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/privacy"
+              className="underline hover:text-blue-600 transition-colors"
+            >
+              Privacy Policy
+            </Link>
           </p>
         </div>
         <div className="flex w-full items-center justify-between">
@@ -62,7 +76,14 @@ export default function Page() {
           >
             @2026 Taskboard
           </p>
-          <AboutBtn />
+          <div className="flex gap-2">
+            <Button size="sm" asChild>
+              <Link href="/terms">Terms</Link>
+            </Button>
+            <Button size="sm" asChild>
+              <Link href="/privacy">Privacy</Link>
+            </Button>
+          </div>
         </div>
       </div>
       {/*Splash Image - bottom on mobile, right side on desktop */}

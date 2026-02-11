@@ -39,7 +39,15 @@ export async function updateSession(request: NextRequest) {
   // with the Supabase client, your users may be randomly logged out.
 
   // Routes that don't require authentication
-  const PUBLIC_ROUTES = ["/hero", "/about", "/login", "/auth/callback", "/404"];
+  const PUBLIC_ROUTES = [
+    "/hero",
+    "/about",
+    "/login",
+    "/auth/callback",
+    "/404",
+    "/privacy",
+    "/terms",
+  ];
   const isPublicRoute = PUBLIC_ROUTES.some((route) =>
     request.nextUrl.pathname.startsWith(route),
   );
