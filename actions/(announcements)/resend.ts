@@ -79,7 +79,7 @@ export async function sendAnnouncementEmail({
 
     // Create email objects with rendered HTML
     const emails = batch.map((recipient, index) => ({
-      from: "Taskboard <onboarding@resend.dev>", // TODO: Replace with your verified domain
+      from: "Taskboard <announcements@taskboard.page>", // Updated to verified domain
       to: recipient.email,
       subject: `${teamName}: ${title}`,
       html: renderedHtmls[index],
