@@ -431,7 +431,7 @@ model announcements {
   error_message   String?
   recipient_count Int          @default(0) @db.SmallInt
   delivered_count Int          @default(0) @db.SmallInt
-  teams           teams        @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "announcements_team_id_fkey1")
+  team            teams        @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "announcements_team_id_fkey1")
 
   @@schema("public")
 }

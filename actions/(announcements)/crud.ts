@@ -120,7 +120,7 @@ export async function deleteAnnouncement(announcementId: bigint) {
     // Fetch announcement with team
     const announcement = await prisma.announcements.findUnique({
       where: { id: announcementId },
-      include: { teams: true },
+      include: { team: true },
     });
 
     if (!announcement) {
@@ -128,7 +128,7 @@ export async function deleteAnnouncement(announcementId: bigint) {
     }
 
     // Verify team ownership
-    if (announcement.teams.leader_id !== leaderId) {
+    if (announcement.team.leader_id !== leaderId) {
       return { success: false, error: "Unauthorized: Not team leader" };
     }
 

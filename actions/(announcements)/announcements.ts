@@ -34,7 +34,7 @@ export async function sendAnnouncement(
     const announcement = await prisma.announcements.findUnique({
       where: { id: announcementId },
       include: {
-        teams: {
+        team: {
           include: {
             team_members: {
               include: {
@@ -51,7 +51,7 @@ export async function sendAnnouncement(
     }
 
     // Verify user is team leader
-    if (announcement.teams.leader_id !== leaderId) {
+    if (announcement.team.leader_id !== leaderId) {
       return { success: false, error: "Unauthorized: Not team leader" };
     }
 
@@ -85,7 +85,7 @@ export async function sendAnnouncement(
     }
 
     // Fetch team members
-    const recipients = announcement.teams.team_members.map((tm) => ({
+    const recipients = announcement.team.team_members.map((tm) => ({
       email: tm.members.email,
       name: tm.members.full_name || undefined,
     }));
@@ -109,7 +109,7 @@ export async function sendAnnouncement(
         recipients,
         title: announcement.title,
         content: announcement.content,
-        teamName: announcement.teams.name,
+        teamName: announcement.team.name,
       });
 
       // Store batch IDs (as JSON array if multiple batches)
@@ -177,7 +177,7 @@ export async function getAnnouncementStatus(announcementId: bigint) {
     const announcement = await prisma.announcements.findUnique({
       where: { id: announcementId },
       include: {
-        teams: true,
+        team: true,
       },
     });
 
@@ -185,7 +185,7 @@ export async function getAnnouncementStatus(announcementId: bigint) {
       return { success: false, error: "Announcement not found" };
     }
 
-    if (announcement.teams.leader_id !== leaderId) {
+    if (announcement.team.leader_id !== leaderId) {
       return { success: false, error: "Unauthorized" };
     }
 
