@@ -29,7 +29,7 @@ export async function getTeams() {
       id: true,
       name: true,
       _count: {
-        select: { teamMembers: true },
+        select: { team_members: true },
       },
     },
   });
@@ -38,7 +38,7 @@ export async function getTeams() {
   return teams.map((team) => ({
     id: team.id,
     name: team.name,
-    memberCount: team._count.teamMembers,
+    memberCount: team._count.team_members,
   }));
 }
 
@@ -74,7 +74,7 @@ export async function createTeam(teamName: string) {
   // Validate team inputs
   const result = Team.safeParse({ name: teamName, leader_id: leaderId });
   if (!result.success) {
-    return { success: false, error: result.error.issues[0].message };
+    throw new Error(result.error.issues[0].message);
   }
 
   try {
@@ -106,7 +106,7 @@ export async function createTeam(teamName: string) {
     };
   } catch (error) {
     console.error("Database Error:", error);
-    return { success: false, error: "Failed to create team" };
+    throw new Error(error instanceof Error ? error.message : "Failed to create team");
   }
 }
 
@@ -120,6 +120,13 @@ export async function deleteTeam(teamId: string) {
   }
 
   try {
+    // Delete announcements first
+    await prisma.announcements.deleteMany({
+      where: {
+        team_id: teamId,
+      },
+    });
+
     // Delete calendar
     const calendarResult = await deleteTeamCalendar(teamId);
     if (!calendarResult.success) {
@@ -136,7 +143,7 @@ export async function deleteTeam(teamId: string) {
     return { success: true };
   } catch (error) {
     console.error("Database Error:", error);
-    return { success: false, error: "Failed to delete team" };
+    throw new Error(error instanceof Error ? error.message : "Failed to delete team");
   }
 }
 // Update teams
@@ -150,7 +157,7 @@ export async function updateTeam(teamId: string, teamName: string) {
   // Validate team inputs
   const result = Team.safeParse({ name: teamName, leader_id: leaderId });
   if (!result.success) {
-    return { success: false, error: result.error.issues[0].message };
+    throw new Error(result.error.issues[0].message);
   }
 
   try {
@@ -172,6 +179,6 @@ export async function updateTeam(teamId: string, teamName: string) {
     return { success: true };
   } catch (error) {
     console.error("Database Error:", error);
-    return { success: false, error: "Failed to update team" };
+    throw new Error(error instanceof Error ? error.message : "Failed to update team");
   }
 }

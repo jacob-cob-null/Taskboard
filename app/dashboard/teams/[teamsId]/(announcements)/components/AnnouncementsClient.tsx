@@ -97,11 +97,11 @@ export default function AnnouncementsClient({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2 sm:space-y-4">
       {/* Header */}
-      <div className="flex justify-between items-center gap-4">
+      <div className="flex justify-between items-center gap-2 sm:gap-4">
         <div className="min-w-0">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
             Announcements
           </h2>
           <p className="text-sm text-gray-600 truncate hidden sm:block">
@@ -112,6 +112,25 @@ export default function AnnouncementsClient({
           teamId={teamId}
           onSuccess={loadAnnouncements}
         />
+      </div>
+
+      {/* Mobile Legend */}
+      <div className="sm:hidden bg-gray-50 border border-gray-200 rounded-lg p-2 text-xs">
+        <div className="flex flex-wrap gap-2 items-center">
+          <p className="font-semibold text-gray-700">Legend:</p>
+          <span className="flex items-center gap-1">
+            <span className="w-4 h-4 rounded-full bg-green-100 border border-green-300 flex items-center justify-center text-green-700 text-[10px] leading-none">✓</span>
+            <span className="text-gray-600">Sent</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-4 h-4 rounded-full bg-orange-100 border border-orange-300 flex items-center justify-center text-orange-700 text-[10px] font-bold leading-none">!</span>
+            <span className="text-gray-600">Partial</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-4 h-4 rounded-full bg-red-100 border border-red-300 flex items-center justify-center text-red-700 text-[10px] leading-none">✗</span>
+            <span className="text-gray-600">Failed</span>
+          </span>
+        </div>
       </div>
 
       {/* Announcements List */}

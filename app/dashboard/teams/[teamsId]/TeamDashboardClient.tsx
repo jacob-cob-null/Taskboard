@@ -73,7 +73,7 @@ export default function TeamDashboard({ teamId }: TeamDashboardClientProps) {
         <div
           className={
             activeTab === "members"
-              ? "block h-full overflow-y-auto p-2"
+              ? "block h-full overflow-y-auto p-1 sm:p-2"
               : "hidden h-full"
           }
         >

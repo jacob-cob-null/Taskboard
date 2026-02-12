@@ -234,7 +234,7 @@ export async function getMembersForTeam(teamId: string) {
     const teamMembers = await prisma.team_members.findMany({
       where: { team_id: teamId },
       include: {
-        member: true,
+        members: true,
       },
       orderBy: {
         added_at: "desc",
@@ -242,9 +242,9 @@ export async function getMembersForTeam(teamId: string) {
     });
 
     const members = teamMembers.map((tm) => ({
-      id: tm.member.id,
-      email: tm.member.email,
-      full_name: tm.member.full_name,
+      id: tm.members.id,
+      email: tm.members.email,
+      full_name: tm.members.full_name,
       added_at: tm.added_at,
     }));
 
@@ -273,7 +273,7 @@ export async function updateMember(
     const teamMembership = await prisma.team_members.findFirst({
       where: {
         member_id: memberId,
-        team: {
+        teams: {
           leader_id: leaderId,
         },
       },

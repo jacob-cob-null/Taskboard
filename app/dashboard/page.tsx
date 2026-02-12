@@ -21,10 +21,10 @@ export default async function Page() {
   const { email, avatar_url, name } = user.user_metadata;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-100 flex items-center justify-center p-4 sm:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-100 flex items-center justify-center p-2 sm:p-8">
       <div className="max-w-4xl w-full">
         {/* Welcome Section */}
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-8">
           <WelcomeMsg name={name} avatarUrl={avatar_url} email={email} />
         </div>
 
@@ -32,13 +32,13 @@ export default async function Page() {
         <CalendarPermissionsBanner />
 
         {/* Team Selection Card */}
-        <div className="flex flex-col bg-white h-fit sm:min-h-[65vh] min-h-[80vh] sm:h-[70vh] rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div className="flex flex-col bg-white h-fit sm:min-h-[65vh] min-h-[80vh] sm:h-[70vh] rounded-lg sm:rounded-2xl border border-black sm:border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-3.5 sm:p-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div>
-              <h2 className={`${inter.className} font-semibold text-xl`}>
+              <h2 className={`${inter.className} font-semibold text-xl sm:text-xl`}>
                 Select a Team
               </h2>
-              <p className={`${inter.className} text-sm text-gray-500 mt-1`}>
+              <p className={`${inter.className} text-sm sm:text-sm text-gray-500 mt-1`}>
                 Choose a workspace to continue your progress.
               </p>
             </div>

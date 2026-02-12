@@ -82,17 +82,17 @@ export function DataTable<T extends Record<string, any>>({
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="flex flex-col gap-4 flex-shrink-0">
-        {SearchComponent && (
-          <div className="flex items-center justify-between gap-4">
-            <SearchComponent value={searchValue} onChange={setSearchValue} />
-            {headerActions && (
-              <div className="flex items-center gap-2">{headerActions}</div>
-            )}
-          </div>
-        )}
+      {SearchComponent && (
+        <div className="flex items-center justify-between gap-4 flex-shrink-0 mb-4">
+          <SearchComponent value={searchValue} onChange={setSearchValue} />
+          {headerActions && (
+            <div className="flex items-center gap-2">{headerActions}</div>
+          )}
+        </div>
+      )}
 
-        <div className="rounded-xl border border-gray-200 overflow-hidden flex-1 min-h-0">
+      <div className="rounded-xl border border-gray-200 overflow-hidden flex-1 min-h-0 flex flex-col">
+        <div className="overflow-auto flex-1">
           <Table>
             <TableHeader>
               <TableRow>
@@ -150,13 +150,15 @@ export function DataTable<T extends Record<string, any>>({
       </div>
 
       {PaginationComponent && (
-        <PaginationComponent
-          totalCount={filteredData.length}
-          canPrevious={currentPage > 1}
-          canNext={currentPage < totalPages}
-          onPrevious={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-        />
+        <div className="flex-shrink-0 mt-4">
+          <PaginationComponent
+            totalCount={filteredData.length}
+            canPrevious={currentPage > 1}
+            canNext={currentPage < totalPages}
+            onPrevious={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            onNext={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          />
+        </div>
       )}
     </div>
   );

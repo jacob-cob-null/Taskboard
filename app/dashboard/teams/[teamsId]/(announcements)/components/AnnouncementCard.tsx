@@ -83,19 +83,23 @@ export default function AnnouncementCard({
 
   return (
     <>
-      <div className="flex items-center gap-3 py-3 px-3 sm:px-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors">
+      <div className="relative flex items-center gap-3 py-3 px-3 sm:px-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors">
+        {/* Badge - Top Right */}
+        <div className="absolute top-3 right-3 sm:right-4">
+          <EmailStatusBadge
+            status={announcement.email_status}
+            recipientCount={announcement.recipient_count}
+            deliveredCount={announcement.delivered_count}
+            errorMessage={announcement.error_message}
+          />
+        </div>
+        
         {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+        <div className="flex-1 min-w-0 pr-16 sm:pr-20">
+          <div className="mb-1">
             <h3 className="font-medium text-gray-900 truncate text-sm sm:text-base">
               {announcement.title}
             </h3>
-            <EmailStatusBadge
-              status={announcement.email_status}
-              recipientCount={announcement.recipient_count}
-              deliveredCount={announcement.delivered_count}
-              errorMessage={announcement.error_message}
-            />
           </div>
           <p className="text-gray-500 text-xs truncate">
             {format(new Date(announcement.created_at), "MMM d, yyyy")}

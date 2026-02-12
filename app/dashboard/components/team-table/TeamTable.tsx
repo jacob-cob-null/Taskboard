@@ -32,12 +32,19 @@ export default function TeamTable({ data = sampleData }: TeamTableProps) {
 
   const handleConfirmDelete = async () => {
     if (teamToDelete) {
-      toast.loading(`Deleting team ${teamToDelete.name} ...`);
-      await deleteTeam(teamToDelete.id);
-      setDeleteModalOpen(false);
-      setTeamToDelete(null);
-      toast.dismiss();
-      toast.success(`Team ${teamToDelete.name} deleted successfully!`);
+      const loadingToast = toast.loading(`Deleting team ${teamToDelete.name}...`);
+      try {
+        await deleteTeam(teamToDelete.id);
+        setDeleteModalOpen(false);
+        setTeamToDelete(null);
+        toast.dismiss(loadingToast);
+        toast.success(`Team ${teamToDelete.name} deleted successfully!`);
+      } catch (error) {
+        toast.dismiss(loadingToast);
+        toast.error(
+          error instanceof Error ? error.message : "Failed to delete team",
+        );
+      }
     }
   };
 
@@ -62,23 +69,25 @@ export default function TeamTable({ data = sampleData }: TeamTableProps) {
 
   return (
     <>
-      <DataTable<Team>
-        data={data}
-        columns={columns}
-        searchKey="name"
-        searchPlaceholder="Search teams..."
-        emptyMessage="Try adding a new team!"
-        onRowClick={(team) => router.push(`/dashboard/teams/${team.id}`)}
-        renderActions={(team) => (
-          <ActionsMenu
-            team={team}
-            onEdit={() => handleEditClick(team)}
-            onDelete={() => handleDeleteClick(team)}
-          />
-        )}
-        SearchComponent={SearchInput}
-        PaginationComponent={Pagination}
-      />
+      <div className="flex-1 flex flex-col min-h-0">
+        <DataTable<Team>
+          data={data}
+          columns={columns}
+          searchKey="name"
+          searchPlaceholder="Search teams..."
+          emptyMessage="Try adding a new team!"
+          onRowClick={(team) => router.push(`/dashboard/teams/${team.id}`)}
+          renderActions={(team) => (
+            <ActionsMenu
+              team={team}
+              onEdit={() => handleEditClick(team)}
+              onDelete={() => handleDeleteClick(team)}
+            />
+          )}
+          SearchComponent={SearchInput}
+          PaginationComponent={Pagination}
+        />
+      </div>
 
       <ConfirmationModal
         open={deleteModalOpen}

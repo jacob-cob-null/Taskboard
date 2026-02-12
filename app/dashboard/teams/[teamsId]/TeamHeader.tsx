@@ -16,10 +16,11 @@ export function TeamHeader({ teamName }: TeamHeaderProps) {
 
   useEffect(() => {
     if (teamNameRef.current) {
+      const isMobile = window.innerWidth < 640;
       const annotation = annotate(teamNameRef.current, {
         type: "underline",
         padding: -3,
-        strokeWidth: 3,
+        strokeWidth: isMobile ? 2 : 3,
         color: "#2563eb",
       });
       annotation.show();
@@ -27,10 +28,10 @@ export function TeamHeader({ teamName }: TeamHeaderProps) {
   }, []);
 
   return (
-    <div className="flex flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <div className="flex flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
       <div>
         <h1
-          className={`${instrumentSerif.className} font-bold text-4xl sm:text-5xl`}
+          className={`${instrumentSerif.className} font-bold text-2xl sm:text-5xl`}
         >
           Team{" "}
           <span ref={teamNameRef} className="text-blue-600 italic">
@@ -38,9 +39,9 @@ export function TeamHeader({ teamName }: TeamHeaderProps) {
           </span>
         </h1>
       </div>
-      <Button asChild>
+      <Button asChild size="sm">
         <Link href={`/dashboard`}>
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <p className={`${inter.className} hidden sm:block`}>Back</p>
         </Link>
       </Button>
