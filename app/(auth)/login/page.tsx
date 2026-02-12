@@ -13,10 +13,11 @@ export default function Page() {
   // Underline effect
   useEffect(() => {
     if (emphasisRef.current) {
+      const isMobile = window.innerWidth < 640;
       const annotation = annotate(emphasisRef.current, {
         type: "underline",
         padding: -3,
-        strokeWidth: 3,
+        strokeWidth: isMobile ? 2 : 3,
         color: "#2563eb",
       });
       annotation.show();

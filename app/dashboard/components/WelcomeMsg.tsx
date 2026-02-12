@@ -18,10 +18,11 @@ function WelcomeMsg({ name, avatarUrl, email }: WelcomeMsgProps) {
 
   useEffect(() => {
     if (nameRef.current) {
+      const isMobile = window.innerWidth < 640;
       const annotation = annotate(nameRef.current, {
         type: "underline",
         padding: -3,
-        strokeWidth: 3,
+        strokeWidth: isMobile ? 2 : 3,
         color: "#2563eb",
       });
       annotation.show();
@@ -33,31 +34,31 @@ function WelcomeMsg({ name, avatarUrl, email }: WelcomeMsgProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className={`${instrumentSerif.className} text-4xl sm:text-5xl`}>
+    <div className="flex flex-col gap-2 sm:gap-4">
+      <h1 className={`${instrumentSerif.className} text-2xl sm:text-5xl`}>
         Welcome back,{" "}
         <span ref={nameRef} className="text-blue-600 italic">
           {name}
         </span>
       </h1>
-      <div className="flex flex-row justify-between items-center gap-3">
-        <div className="flex items-center w-fit justify-center gap-2 px-3 py-1.5 bg-white rounded-full border border-gray-200 shadow-sm">
+      <div className="flex flex-row justify-between items-center gap-2 sm:gap-3">
+        <div className="flex items-center w-fit justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-white rounded-full border border-gray-200 shadow-sm">
           <Image
             src={avatarUrl}
             alt={`Profile of ${name}`}
-            width={24}
-            height={24}
-            className="rounded-full"
+            width={23}
+            height={23}
+            className="rounded-full sm:w-6 sm:h-6"
           />
-          <span className={`${inter.className} text-sm text-gray-600`}>
+          <span className={`${inter.className} text-xs sm:text-sm text-gray-600`}>
             {email}
           </span>
         </div>
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-2 px-3 sm:px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+          className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-base text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span className="hidden sm:inline">Log Out</span>
         </button>
       </div>

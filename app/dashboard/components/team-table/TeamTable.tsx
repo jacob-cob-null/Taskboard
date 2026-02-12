@@ -69,23 +69,25 @@ export default function TeamTable({ data = sampleData }: TeamTableProps) {
 
   return (
     <>
-      <DataTable<Team>
-        data={data}
-        columns={columns}
-        searchKey="name"
-        searchPlaceholder="Search teams..."
-        emptyMessage="Try adding a new team!"
-        onRowClick={(team) => router.push(`/dashboard/teams/${team.id}`)}
-        renderActions={(team) => (
-          <ActionsMenu
-            team={team}
-            onEdit={() => handleEditClick(team)}
-            onDelete={() => handleDeleteClick(team)}
-          />
-        )}
-        SearchComponent={SearchInput}
-        PaginationComponent={Pagination}
-      />
+      <div className="flex-1 flex flex-col min-h-0">
+        <DataTable<Team>
+          data={data}
+          columns={columns}
+          searchKey="name"
+          searchPlaceholder="Search teams..."
+          emptyMessage="Try adding a new team!"
+          onRowClick={(team) => router.push(`/dashboard/teams/${team.id}`)}
+          renderActions={(team) => (
+            <ActionsMenu
+              team={team}
+              onEdit={() => handleEditClick(team)}
+              onDelete={() => handleDeleteClick(team)}
+            />
+          )}
+          SearchComponent={SearchInput}
+          PaginationComponent={Pagination}
+        />
+      </div>
 
       <ConfirmationModal
         open={deleteModalOpen}

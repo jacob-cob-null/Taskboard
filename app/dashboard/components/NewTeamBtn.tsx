@@ -45,18 +45,18 @@ function NewTeamBtn() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center justify-end gap-2">
-          <Plus className="w-4 h-4" />
+        <Button className="flex items-center justify-end gap-1.5 sm:gap-2 text-xs sm:text-base" size="sm">
+          <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           New Team
         </Button>
       </DialogTrigger>
       <DialogOverlay className="bg-black/30">
-        <DialogContent className="p-8 rounded-xl outline-4 outline-black overflow-visible">
-          <DialogHeader className="p-1">
+        <DialogContent className="p-4.5 sm:p-8 rounded-lg sm:rounded-xl outline-2 sm:outline-4 outline-black overflow-visible">
+          <DialogHeader className="p-0.5 sm:p-1">
             <DialogTitle
-              className={`${instrumentSerif.className} text-md font-base font-bold text-4xl flex items-center gap-3`}
+              className={`${instrumentSerif.className} text-md font-base font-bold text-2xl sm:text-4xl flex items-center gap-2 sm:gap-3`}
             >
-              <Users className="w-10 h-10 text-blue-600" />
+              <Users className="w-7 h-7 sm:w-10 sm:h-10 text-blue-600" />
               Create New Team
             </DialogTitle>
           </DialogHeader>
