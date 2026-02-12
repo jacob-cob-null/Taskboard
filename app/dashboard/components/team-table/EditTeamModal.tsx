@@ -36,14 +36,14 @@ function EditTeamModal({ team, open, onOpenChange }: EditTeamModalProps) {
     if (!teamName.trim() || !team) return;
     setIsLoading(true);
 
+    const loadingToast = toast.loading("Updating team...");
     try {
-      toast.loading("Updating team...");
       await updateTeam(team.id, teamName);
-      toast.dismiss();
+      toast.dismiss(loadingToast);
       toast.success(`Team "${teamName}" updated successfully!`);
       onOpenChange(false);
     } catch (error) {
-      toast.dismiss();
+      toast.dismiss(loadingToast);
       toast.error(
         error instanceof Error ? error.message : "Failed to update team",
       );

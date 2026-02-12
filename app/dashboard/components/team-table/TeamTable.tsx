@@ -32,12 +32,19 @@ export default function TeamTable({ data = sampleData }: TeamTableProps) {
 
   const handleConfirmDelete = async () => {
     if (teamToDelete) {
-      toast.loading(`Deleting team ${teamToDelete.name} ...`);
-      await deleteTeam(teamToDelete.id);
-      setDeleteModalOpen(false);
-      setTeamToDelete(null);
-      toast.dismiss();
-      toast.success(`Team ${teamToDelete.name} deleted successfully!`);
+      const loadingToast = toast.loading(`Deleting team ${teamToDelete.name}...`);
+      try {
+        await deleteTeam(teamToDelete.id);
+        setDeleteModalOpen(false);
+        setTeamToDelete(null);
+        toast.dismiss(loadingToast);
+        toast.success(`Team ${teamToDelete.name} deleted successfully!`);
+      } catch (error) {
+        toast.dismiss(loadingToast);
+        toast.error(
+          error instanceof Error ? error.message : "Failed to delete team",
+        );
+      }
     }
   };
 

@@ -25,13 +25,15 @@ function NewTeamBtn() {
     if (!teamName.trim()) return;
     setIsLoading(true);
 
+    const loadingToast = toast.loading("Creating team...");
     try {
-      toast.loading("Creating team...");
       await createTeam(teamName);
+      toast.dismiss(loadingToast);
       toast.success(`Team "${teamName}" created successfully!`);
       setTeamName("");
       setOpen(false);
     } catch (error) {
+      toast.dismiss(loadingToast);
       toast.error(
         error instanceof Error ? error.message : "Failed to create team",
       );
