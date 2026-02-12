@@ -36,7 +36,7 @@ export async function sendAnnouncement(
       include: {
         team: {
           include: {
-            team_members: {
+            teamMembers: {
               include: {
                 members: true,
               },
@@ -85,7 +85,7 @@ export async function sendAnnouncement(
     }
 
     // Fetch team members
-    const recipients = announcement.team.team_members.map((tm) => ({
+    const recipients = announcement.team.teamMembers.map((tm) => ({
       email: tm.members.email,
       name: tm.members.full_name || undefined,
     }));

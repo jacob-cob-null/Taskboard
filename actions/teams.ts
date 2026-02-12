@@ -29,7 +29,7 @@ export async function getTeams() {
       id: true,
       name: true,
       _count: {
-        select: { team_members: true },
+        select: { teamMembers: true },
       },
     },
   });
@@ -38,7 +38,7 @@ export async function getTeams() {
   return teams.map((team) => ({
     id: team.id,
     name: team.name,
-    memberCount: team._count.team_members,
+    memberCount: team._count.teamMembers,
   }));
 }
 
