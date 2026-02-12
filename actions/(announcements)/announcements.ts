@@ -34,11 +34,11 @@ export async function sendAnnouncement(
     const announcement = await prisma.announcements.findUnique({
       where: { id: announcementId },
       include: {
-        team: {
+        teams: {
           include: {
-            teamMembers: {
+            team_members: {
               include: {
-                member: true,
+                members: true,
               },
             },
           },
@@ -51,7 +51,7 @@ export async function sendAnnouncement(
     }
 
     // Verify user is team leader
-    if (announcement.team.leader_id !== leaderId) {
+    if (announcement.teams.leader_id !== leaderId) {
       return { success: false, error: "Unauthorized: Not team leader" };
     }
 
@@ -85,9 +85,9 @@ export async function sendAnnouncement(
     }
 
     // Fetch team members
-    const recipients = announcement.team.teamMembers.map((tm) => ({
-      email: tm.member.email,
-      name: tm.member.full_name || undefined,
+    const recipients = announcement.teams.team_members.map((tm) => ({
+      email: tm.members.email,
+      name: tm.members.full_name || undefined,
     }));
 
     if (recipients.length === 0) {
@@ -109,7 +109,7 @@ export async function sendAnnouncement(
         recipients,
         title: announcement.title,
         content: announcement.content,
-        teamName: announcement.team.name,
+        teamName: announcement.teams.name,
       });
 
       // Store batch IDs (as JSON array if multiple batches)
@@ -177,7 +177,7 @@ export async function getAnnouncementStatus(announcementId: bigint) {
     const announcement = await prisma.announcements.findUnique({
       where: { id: announcementId },
       include: {
-        team: true,
+        teams: true,
       },
     });
 
@@ -185,7 +185,7 @@ export async function getAnnouncementStatus(announcementId: bigint) {
       return { success: false, error: "Announcement not found" };
     }
 
-    if (announcement.team.leader_id !== leaderId) {
+    if (announcement.teams.leader_id !== leaderId) {
       return { success: false, error: "Unauthorized" };
     }
 

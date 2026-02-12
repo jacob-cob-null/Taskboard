@@ -120,6 +120,13 @@ export async function deleteTeam(teamId: string) {
   }
 
   try {
+    // Delete announcements first
+    await prisma.announcements.deleteMany({
+      where: {
+        team_id: teamId,
+      },
+    });
+
     // Delete calendar
     const calendarResult = await deleteTeamCalendar(teamId);
     if (!calendarResult.success) {
