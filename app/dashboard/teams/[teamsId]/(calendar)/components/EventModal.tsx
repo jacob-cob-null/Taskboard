@@ -20,6 +20,7 @@ import {
 import { format } from "date-fns";
 import { inter, instrumentSerif } from "@/app/fonts";
 import toast from "react-hot-toast";
+import { Plus, Save, Trash2, X, CalendarPlus, CalendarCog } from "lucide-react";
 
 interface EventModalProps {
   isOpen: boolean;
@@ -117,15 +118,25 @@ export default function EventModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className=" bg-black/30">
-        <DialogContent className="p-8 rounded-xl outline-4 outline-black overflow-visible">
+        <DialogContent className="p-6 sm:p-8 rounded-xl outline-4 outline-black overflow-visible">
           <DialogHeader className="p-0">
             <DialogTitle
-              className={`${instrumentSerif.className} font-base font-bold text-4xl`}
+              className={`${instrumentSerif.className} font-base font-bold text-3xl sm:text-4xl flex items-center gap-3`}
             >
-              {mode === "create" ? "📅 Add New Event" : "📝 Edit Event"}
+              {mode === "create" ? (
+                <>
+                  <CalendarPlus className="w-8 h-8 text-blue-600" />
+                  Add New Event
+                </>
+              ) : (
+                <>
+                  <CalendarCog className="w-8 h-8 text-blue-600" />
+                  Edit Event
+                </>
+              )}
             </DialogTitle>
             <DialogDescription
-              className={`${inter.className} text-md font-base text-foreground`}
+              className={`${inter.className} text-sm sm:text-md font-base text-foreground`}
             >
               {mode === "create"
                 ? "Enter the details for the new team event."
@@ -135,7 +146,7 @@ export default function EventModal({
 
           <form onSubmit={handleSubmit} className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <label className="text-sm font-medium">Event Title</label>
+              <label className="text-sm font-medium p-1">Event Title</label>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -187,26 +198,40 @@ export default function EventModal({
               )}
             </div>
 
-            <DialogFooter className="flex mt-4 justify-between items-center md:justify-between">
-              {mode === "edit" && onDelete && (
-                <Button
-                  className="bg-red-500 hover:bg-red-600"
-                  type="button"
-                  onClick={() => onDelete(event!.id)}
-                >
-                  Delete
-                </Button>
-              )}
+            <DialogFooter className="flex mt-4 justify-end items-center">
               <div className="place-content-end grid grid-cols-2 w-full sm:flex gap-2 ml-auto">
-                <Button
-                  type="button"
-                  onClick={onClose}
-                  className="bg-slate-100 text-black"
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">
-                  {mode === "create" ? "Add Event" : "Save Changes"}
+                {mode === "create" && (
+                  <Button
+                    type="button"
+                    onClick={onClose}
+                    className="bg-slate-100 text-black flex items-center gap-2"
+                  >
+                    <X className="w-4 h-4" />
+                    Cancel
+                  </Button>
+                )}
+                {mode === "edit" && onDelete && (
+                  <Button
+                    className="bg-red-500 hover:bg-red-600 flex items-center gap-2"
+                    type="button"
+                    onClick={() => onDelete(event!.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </Button>
+                )}
+                <Button type="submit" className="flex items-center gap-2">
+                  {mode === "create" ? (
+                    <>
+                      <Plus className="w-4 h-4" />
+                      Add Event
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      Save Changes
+                    </>
+                  )}
                 </Button>
               </div>
             </DialogFooter>

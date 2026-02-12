@@ -80,7 +80,10 @@ export default function CreateAnnouncementDialog({
       </AlertDialogTrigger>
       <AlertDialogContent className="p-4 left-4 right-4 translate-x-0 sm:left-[50%] sm:right-auto sm:translate-x-[-50%] max-w-md sm:max-w-2xl sm:m-0 sm:w-full h-[500px] sm:h-[480px] flex flex-col">
         <AlertDialogHeader className="p-1 shrink-0">
-          <AlertDialogTitle>Create Announcement</AlertDialogTitle>
+          <AlertDialogTitle className="flex items-center gap-2">
+            <Megaphone className="w-5 h-5 text-blue-600" />
+            Create Announcement
+          </AlertDialogTitle>
         </AlertDialogHeader>
 
         <div className="space-y-3 flex-1 flex flex-col overflow-hidden">
